@@ -47,5 +47,9 @@ void main()
     	}
 
     	fscanf(ptr,"%u",&nptrG.Weekly_Group_Goal);
+    	CreateGroup(nptrG);
     	
 	}
+
+	fclose(ptr);
+}
