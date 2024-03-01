@@ -23,7 +23,11 @@ typedef struct NodeG_tag
 typedef enum{FALSE,TRUE} status_code;
 
 //Helper Functions
+/*Store the Member pointer in the Group*/
 status_code Store_Member_Pointers(NodeG*,unsigned int*);
+
+/*Get the Member Pointer given the Memeber Id*/
+NodeI* Search_for_Member_pointer(unsigned int);
 
 //Main Functionalities
 /*Add a Person*/
