@@ -2,7 +2,19 @@
 #include<stdio.h>
 #include"functions.h"
 
-status_code CreateGroup(NodeG *nptr)
+NodeI* CreateNodeI()
+{
+	Node *nptr=(NodeI*)malloc(sizeof(NodeI));
+	return nptr;
+}
+
+NodeG* CreateNodeI()
+{
+	Node *nptr=(NodeG*)malloc(sizeof(NodeG));
+	return nptr;
+}
+
+status_code Create_Group(NodeG *nptr)
 {
 	NodeG *ptr=lptrG;
 	NodeG *prev=NULL;
@@ -31,5 +43,48 @@ status_code CreateGroup(NodeG *nptr)
 		}
 	}
 	return sc;
-
 }
+
+NodeI* Search_for_Member_pointer(unsigned int Member_Id)
+{
+	NodeI* res=NULL;
+    NodeI* curr=head;
+    while(curr!=NULL  && curr->Id!=Member_Id){
+        curr=curr->next;
+    }
+    if(curr!=NULL){
+        res=curr;
+    }
+    return res;
+}
+
+status_code Store_Member_Pointers(NodeG *nptr)
+{
+	status_code sc=SUCCESS;
+
+	for(int i=0;i<5;i++)
+	{
+		if((nptr->Member_Id[i]!=-1)&&(Check_Unique(nptr->Member_Id[i])))
+			nptr->Members[i]=Search_for_Member_pointer(nptr->Member_Id[i]);
+		else
+			nptr->Members[i]=NULL;
+	}
+
+	return sc;
+}
+
+Boolean Check_Unique(unsigned int Member_Id)
+{
+	NodeG *ptr=lptrG;
+	Boolean bool=TRUE;
+
+	while((ptr->next!=NULL)&&(bool))
+	{
+		for(int i=0;i<5,bool;i++)
+			if(Member_Id==nptr->Member_Id[i])
+				bool=FALSE;
+	}
+
+	return bool;
+}
+

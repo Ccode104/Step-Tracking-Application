@@ -14,6 +14,7 @@ typedef struct NodeG_tag
 {
 	unsigned int Id;
 	char Name[20];
+	unsigned int Member_Id[5];
 	NodeI *Members[5];
 	unsigned int Weekly_Group_Goal;
 	struct NodeG_tag *next;
@@ -24,10 +25,17 @@ typedef enum{FALSE,TRUE} status_code;
 
 //Helper Functions
 /*Store the Member pointer in the Group*/
-status_code Store_Member_Pointers(NodeG*,unsigned int*);
+status_code Store_Member_Pointers(NodeG*);
 
-/*Get the Member Pointer given the Memeber Id*/
+/*Get the Member Pointer given the Member Id*/
 NodeI* Search_for_Member_pointer(unsigned int);
+
+/*Check if Unique Member*/
+Boolean Check_Unique(unsigned int);
+
+/*Create the Nodes*/
+NodeI* CreateNodeI();
+NodeG* CreateNodeG();
 
 //Main Functionalities
 /*Add a Person*/
