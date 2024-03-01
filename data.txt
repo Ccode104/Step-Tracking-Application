@@ -1,59 +1,64 @@
-12
-Emma Johnson
-27
-23
-2
-3
-4
-5
-6
-7
-8
-21
-Noah Smith
-32
-13
-24
-1
-4
-5
-2
-10
-8
-9
-Olivia Brown
-45
-Liam Davis
-22
-Ava Martinez
-36
-William Anderson
-31
-Sophia Wilson
-29
-James Taylor
-40
-Isabella Thomas
+#ID, Name, Age, Daily Step goal, Weekly step count
+101
+John Smith
 25
-Oliver Harris
-33
-Charlotte Jackson
-28
-Ethan Miller
-39
-Amelia Jones
-34
-Benjamin White
-26
-Mia Lee
+10000
+10500 
+11000
+9800
+10200
+11500
+12000
+12500
+102
+Emily Johnson
 30
-Alexander Martin
-42
-Harper Thompson
-23
-Michael Garcia
-37
-Evelyn Rodriguez
-41
-Daniel Hernandez
-35
+8000
+8200
+7800
+8400
+7900
+8100
+8300
+8500
+103
+Michael Williams
+40
+12000
+12200
+11900
+12300
+12100
+12400
+11800
+12600
+104, Jessica Brown, 35, 9000, [9100, 9300, 9200, 8900, 9500, 9000, 9400]
+105, Daniel Martinez, 28, 11000, [11200, 10800, 11300, 11500, 11400, 11600, 11100]
+106, Sarah Wilson, 32, 10000, [9800, 10200, 9900, 10100, 9700, 10300, 10000]
+107, David Taylor, 45, 8000, [7900, 8200, 8000, 8100, 8300, 7800, 8000]
+108, Jennifer Anderson, 38, 12000, [12300, 12500, 12100, 12400, 12000, 12600, 12200]
+109, Christopher Thomas, 27, 9000, [9200, 9300, 9400, 9100, 9500, 9000, 9400]
+110, Amanda Moore, 29, 11000, [11500, 11300, 11600, 11200, 11400, 11100, 11700]
+111, Noah Smith, 32, 8000, [8200, 8100, 8300, 7800, 8400, 8000, 8500]
+112, Olivia Brown, 45, 12000, [12400, 12100, 12300, 12500, 12600, 12200, 12000]
+113, Liam Davis, 22, 9000, [9100, 9200, 9300, 8900, 9400, 9000, 9500]
+114, Ava Martinez, 36, 11000, [11200, 11000, 11300, 11100, 11500, 11400, 11600]
+115, William Anderson, 31, 10000, [10200, 9800, 10100, 9900, 10300, 10000, 10400]
+116, Sophia Wilson, 29, 8000, [8100, 8300, 8200, 7900, 8400, 8000, 8500]
+117, James Taylor, 40, 12000, [12200, 12400, 12100, 12300, 12500, 12000, 12600]
+118, Isabella Thomas, 25, 9000, [9200, 9100, 9300, 9400, 9000, 9500, 8900]
+119, Oliver Harris, 33, 11000, [11300, 11200, 11400, 11000, 11600, 11500, 11100]
+120, Charlotte Jackson, 28, 10000, [10100, 9900, 10300, 10000, 10400, 9800, 10200]
+
+Group-ID, Group name, Member IDs, Weekly group goal
+1
+Steppers United
+101
+105
+110
+115 
+280,000
+2, Walk Warriors, [102, 106, 111, 116], 290,000 steps
+3, Step Squad, [103, 107, 112, 117], 280,000 steps
+4, Stride Squad, [104, 108, 113, 118], 280,000 steps
+5, Pace Pioneers, [109, 114, 119, 120], 290,000 steps
