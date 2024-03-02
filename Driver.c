@@ -22,7 +22,7 @@ void main()
     {
     	nptrI=CreateNodeI();
      	fscanf(ptr,"%u",&nptrI->Id);
-    	fscanf(ptr,"%s",nptrI->Name);
+    	fgets(nptrI->Name,20,ptr);
    	 	fscanf(ptr,"%u",&nptrI->Age);
      	fscanf(ptr,"%u",&nptrI->Daily_Step_Goal);
      	for(int i=0;i<7;i++)
@@ -36,7 +36,7 @@ void main()
 	{
 		nptrG=CreateNodeG();
 		fscanf(ptr,"%u",&nptrG->Id);
-    	fscanf(ptr,"%s",nptrG->Name);
+    	fgets(nptrG->Name,20,ptr);
     	
     	for(int j=0;j<5;j++)
     	{

@@ -84,7 +84,6 @@ Boolean Check_Unique(unsigned int Member_Id)
 			if(Member_Id==nptr->Member_Id[i])
 				bool=FALSE;
 	}
-
 	return bool;
 }
 
