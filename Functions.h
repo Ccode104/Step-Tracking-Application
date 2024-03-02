@@ -35,8 +35,8 @@ NodeI* Search_for_Member_pointer(unsigned int);
 Boolean Check_Unique(unsigned int);
 
 /*Create the Nodes*/
-NodeI* CreateNodeI();
-NodeG* CreateNodeG();
+void CreateNodeI(NodeI**);
+void CreateNodeG(NodeG**);
 
 //Main Functionalities
 /*Add a Person*/
@@ -45,11 +45,8 @@ status_code Add_Person(NodeI*);
 /*Create a Group*/
 status_code Create_Group(NodeG*);
 
-/*Delte a Group*/
-status_code Delete_Group(unsigned int Group_Id)
-{
-	NodeG *ptr=lptrG;
+/*Delete a Group*/
+status_code Delete_Group(unsigned int);
 
-}
-
-
+/*Merge Groups*/
+status_code Merge_Groups(unsigned int,unsigned int);

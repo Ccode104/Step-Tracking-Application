@@ -16,22 +16,31 @@ void main()
         printf("no such file.");
         
     }
+    else
+    {
+
+
 
     /*Input the Individual Details*/
     for(int j=0;j<20;j++)
     {
-    	nptrI=CreateNodeI();
+    	CreateNodeI(&nptrI);
      	fscanf(ptr,"%u",&nptrI->Id);
-    	fgets(nptrI->Name,20,ptr);
+     	//printf("%u",nptrI->Id);
+    	fscanf(ptr,"%s",nptrI->Name);
+    	//printf("%s",nptrI->Name);
    	 	fscanf(ptr,"%u",&nptrI->Age);
+   	 	//printf("%u",nptrI->Age);
      	fscanf(ptr,"%u",&nptrI->Daily_Step_Goal);
+     	//printf("%u",nptrI->Daily_Step_Goal);
      	for(int i=0;i<7;i++)
      	{
 			fscanf(ptr,"%u",&nptrI->Weekly_Step_Count[i]);
+			//printf("%u",nptrI->Weekly_Step_Count[i]);
 	 	}
 	 	Add_Person(nptrI);
 	}
-
+/*
 	for(int i=0;i<5;i++)
 	{
 		nptrG=CreateNodeG();
@@ -53,6 +62,7 @@ void main()
     	Create_Group(nptrG);
     	
 	}
-
+*/
 	fclose(ptr);
+}
 }
