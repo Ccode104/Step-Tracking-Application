@@ -5,7 +5,7 @@ typedef struct NodeI_tag
 	char Name[20];
 	unsigned int Age;
 	unsigned int Daily_Step_Goal;
-	unsigned int Weekly_Step_count[7];
+	unsigned int Weekly_Step_Count[7];
 	struct NodeI_tag *next;
 } NodeI;
 
@@ -21,8 +21,9 @@ typedef struct NodeG_tag
 } NodeG;
 
 /*Status Code to trace the errors*/
-typedef enum{FALSE,TRUE} status_code;
+typedef enum{FAILURE,SUCCESS} status_code;
 
+typedef enum{FALSE,TRUE} Boolean;
 //Helper Functions
 /*Store the Member pointer in the Group*/
 status_code Store_Member_Pointers(NodeG*);

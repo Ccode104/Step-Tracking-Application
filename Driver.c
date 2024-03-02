@@ -1,13 +1,13 @@
 #include<stdio.h>
-#include<conio.h>
 #include"Functions.h"
 
-NodeI *lptrI;
-NodeG *lptrG;
+
 
 void main()
 {
 	
+	NodeI *nptrI;
+	NodeG *nptrG;
 
 	//Input the details
     FILE* ptr = fopen("data.txt", "r");
@@ -27,7 +27,7 @@ void main()
      	fscanf(ptr,"%u",&nptrI->Daily_Step_Goal);
      	for(int i=0;i<7;i++)
      	{
-			fscanf(ptr,"%u",&nptrI->Weekly_step_Count[i]);
+			fscanf(ptr,"%u",&nptrI->Weekly_Step_Count[i]);
 	 	}
 	 	Add_Person(nptrI);
 	}
@@ -49,8 +49,8 @@ void main()
     		Store_Member_Pointers(nptrG);
     	}
 
-    	fscanf(ptr,"%u",&nptrG.Weekly_Group_Goal);
-    	CreateGroup(nptrG);
+    	fscanf(ptr,"%u",&nptrG->Weekly_Group_Goal);
+    	Create_Group(nptrG);
     	
 	}
 
