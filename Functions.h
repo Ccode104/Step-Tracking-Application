@@ -45,7 +45,11 @@ status_code Add_Person(NodeI*);
 /*Create a Group*/
 status_code Create_Group(NodeG*);
 
-/*Get top 3 individuals*/
-status_code Get_top_3(NodeI**);
+/*Delte a Group*/
+status_code Delete_Group(unsigned int Group_Id)
+{
+	NodeG *ptr=lptrG;
 
-/*Check the group achievement*/
+}
+
+

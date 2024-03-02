@@ -2,8 +2,8 @@
 #include<stdio.h>
 #include"Functions.h"
 
-NodeI *lptrI;
-NodeG *lptrG;
+NodeI *lptrI=NULL;
+NodeG *lptrG=NULL;
 
 NodeI* CreateNodeI()
 {
