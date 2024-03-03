@@ -31,6 +31,9 @@ status_code Store_Member_Pointers(NodeG*);
 /*Get the Member Pointer given the Member Id*/
 NodeI* Search_for_Member_pointer(unsigned int);
 
+/*Get the Group Pointer given the Group Id*/
+NodeG* Search_for_Group_pointer(unsigned int);
+
 /*Check if Unique Member*/
 Boolean Check_Unique(unsigned int);
 
@@ -50,3 +53,6 @@ status_code Delete_Group(unsigned int);
 
 /*Merge Groups*/
 status_code Merge_Groups(unsigned int,unsigned int);
+
+/*Display Group Info*/
+status_code Display_Group_Info(unsigned int);

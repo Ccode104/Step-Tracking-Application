@@ -102,6 +102,19 @@ NodeI* Search_for_Member_pointer(unsigned int Member_Id)
     return Member_ptr;
 }
 
+NodeG* Search_for_Group_pointer(unsigned int Group_Id)
+{
+	NodeI* Group_ptr=NULL;
+    NodeI* ptr=lptrG;
+    while(ptr!=NULL  && ptr->Id!=Group_Id){
+        ptr=ptr->next;
+    }
+    if(ptr!=NULL){
+        Group_ptr=ptr;
+    }
+    return Group_ptr;
+}
+
 status_code Store_Member_Pointers(NodeG *nptr)
 {
 	status_code sc=SUCCESS;
@@ -278,4 +291,46 @@ status_code Delete_individual(unsigned int Member_Id){
 	}
 	return sc;
 	
+}
+
+status_code Display_Member_Info(unsigned int Member_Id)
+{
+	status_code sc=SUCCESS;
+	NodeI *ptr=Search_for_Member_pointer(Member_Id);
+
+	if(ptr==NULL)
+	{
+		sc=FAILURE;
+	}
+	else
+	{
+		printf("\nMember Id : ",ptr->Id);
+		printf("\nMember Name : ",ptr->Id);
+		printf("\nMember Age : ",ptr->Age);
+	}
+	return sc;
+}
+
+status_code Display_Group_Info(unsigned int Group_Id)
+{
+	status_code sc=SUCCESS;
+	NodeG *ptr=Search_for_Group_Pointer(Group_Id);
+
+	if(ptr==NULL)
+	{
+		sc=FAILURE;
+	}
+	else
+	{
+		printf("\nGroup Id : ",Group_Id);
+		printf("\nGroup Name : ",ptr->Name);
+		printf("\nDetails of the Members");
+		for(int i=0;i<5;i++)
+		{
+			Display_Member_Info(ptr->Members[i]);
+		}
+		printf("\n\nWeekly Group Goal :  ",ptr->Weekly_Group_Goal);
+		printf("\nRank of the Group : ");
+	}
+	return sc;
 }
