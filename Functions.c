@@ -139,6 +139,7 @@ status_code Delete_Group(unsigned int Group_Id)
 
 	while((ptr!=NULL)&&(ptr->Id!=Group_Id))
 	{
+		prev=ptr;
 		ptr=ptr->next;
 	}
 
@@ -162,44 +163,119 @@ status_code Delete_Group(unsigned int Group_Id)
 	}
 	return sc;
 }
-/*
+
 status_code Merge_Groups(unsigned int Group_Id_1,unsigned int Group_Id_2)
 {
-	NodeG *ptr1=lptrG;
+	NodeG *ptr=lptrG;
 	NodeG *prev=NULL;
-	status_code sc=SUCCESS;
+	NodeG *nptr,*tptr,*tprev;
+	CreateNodeG(&nptr);
 
-	while((ptr1!=NULL)&&(ptr1->ID!=Group_Id_1)&&(ptr1->ID!=Group_Id_2))
+	status_code sc=SUCCESS;
+	unsigned int t;
+
+
+	if(Group_Id_1>Group_Id_2)
 	{
-		ptr1=ptr1->next;
+		t=Group_Id_1;
+		Group_Id_1=Group_Id_2;
+		Group_Id_2=t;
 	}
 
-	if(ptr1==NULL)
+	while((ptr!=NULL)&&(ptr->Id!=Group_Id_1))
+	{
+		prev=ptr;
+		ptr=ptr->next;
+	}
+
+	if(ptr==NULL)
 	{
 		sc=FAILURE;
 	}
-	else if(ptr1->ID==Group_Id_1)
+	else 
 	{
-		ptr2=ptr1->next;
-
-		while((ptr2!=NULL)&&(ptr2->ID!=Group_Id_2))
+		nptr->Id=Group_Id_1;
+		printf("\nEnter the Group Name\t");
+		scanf("%s",nptr->Name);
+		i=0;
+		while(ptr->Members[i]!=NULL)
 		{
-			ptr2=ptr2->next;
+			nptr->Members[i]=ptr->Members[i];
+			i++;
 		}
+		printf("\nEnter the Weekly Group Goal\t");
+		scanf("%u",&nptr->Weekly_Group_Goal);
 
-		if(ptr2==NULL)
+		tptr=ptr;
+		tprev=prev;
+		
+		ptr=tptr->next;
+		while((ptr!=NULL)&&(ptr->ID!=Group_Id_2))
 		{
-			sc=FAILURE;
+			prev=ptr;
+			ptr=ptr->next;
+		}
+		//prev cannot be NULL
+		prev->next=ptr->next;
+		
+		while((i+j)<5)
+		{
+			nptr->Members[i+j]=ptr->Members[j];
+			j++;
+		}
+		if(tptr->Members[j]==NULL)
+		{
+			if(tprev==NULL)
+			{
+				nptr->next=lptrG;
+				lptrG=nptr;
+				free(tptr);
+			}
+			else
+			{
+				tprev->next=nptr;
+				nptr->next=tptr->next;
+				free(tptr);
+			}
 		}
 		else
 		{
-
+			sc=FAILURE;
 		}
+	}
 
+}
+
+status_code Delete_individual(unsigned int Member_Id){
+	status_code sc=SUCCESS;
+	NodeI* ptr=lptrI;
+	NodeI* prev=NULL;
+	while(ptr!=NULL && ptr->Id>Member_Id){
+		prev=ptr;
+		ptr=ptr->next;
+	}
+	if(ptr==NULL || ptr->Id<Member_Id){
+		// No member found with the given id;
+		printf("Enter the correct Member_ID \n");
+		sc=FAILURE;
 
 	}
+	else{
+		// The id must be equal means it is present 
+		if(prev==NULL){
+			NodeI* nptr=ptr->next;
+			free(ptr);
+			lptrI=nptr;
+		}
+		else{
+			NodeI* nptr=ptr->next;
+			free(ptr);
+			prev->next=nptr;
+
+
+		}
+		ptr=NULL;
+	}
+	return sc;
 	
-
-
-
-}*/
+}
