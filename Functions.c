@@ -335,9 +335,15 @@ status_code Display_Group_Info(unsigned int Group_Id)
 	return sc;
 }
 
+unsigned int Compute_Number_Of_Steps_In_a_Week(NodeI *ptr)
+{
+	//To be defined
+}
+
 Boolean Check_Group_Achievement(unsigned int Group_Id)
 {
 	Boolean bool=TRUE;
+	unsigned int count=0;
 	NodeG *ptr=Search_for_Group_Pointer(Group_Id);
 
 	if(ptr==NULL)
@@ -347,6 +353,18 @@ Boolean Check_Group_Achievement(unsigned int Group_Id)
 	}
 	else
 	{
-		Compute
+		for(int i=0;i<5;i++)
+			count+=Compute_Number_Of_Steps_In_a_Week(ptr->Members[i]);
+		if(count>=Weekly_Group_Goal)
+		{
+			bool=TRUE;
+			printf("\nThe group has completed the Weekly Goal");
+		}
+		else{
+			bool=FALSE;
+			printf("\nThe group has not complted the Weekly Goal");
+		}
 	}
+
+	return bool;
 }
