@@ -292,7 +292,7 @@ status_code Delete_individual(unsigned int Member_Id){
 	return sc;
 	
 }
-
+//If already defined Ignore the below definition
 status_code Display_Member_Info(unsigned int Member_Id)
 {
 	status_code sc=SUCCESS;
@@ -333,4 +333,20 @@ status_code Display_Group_Info(unsigned int Group_Id)
 		printf("\nRank of the Group : ");
 	}
 	return sc;
+}
+
+Boolean Check_Group_Achievement(unsigned int Group_Id)
+{
+	Boolean bool=TRUE;
+	NodeG *ptr=Search_for_Group_Pointer(Group_Id);
+
+	if(ptr==NULL)
+	{
+		bool=FALSE;
+		printf("\nGroup Does Not Exist!");
+	}
+	else
+	{
+		Compute
+	}
 }
