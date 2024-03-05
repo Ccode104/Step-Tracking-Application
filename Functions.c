@@ -59,12 +59,15 @@ status_code Create_Group(NodeG *nptr)
 
 	if(lptrG==NULL)
 	{
+		//Empty list
 		lptrG=nptr;
+		nptr->next=NULL;
 	}
 	else
 	{
-		while(ptr->Id>nptr->Id)
-		{
+		while(nptr->Id>ptr->Id)
+		{ 
+			//The Id of the Groupto be inserted is larger
 			prev=ptr;
 			ptr=ptr->next;
 		}
@@ -292,11 +295,10 @@ status_code Delete_individual(unsigned int Member_Id){
 	return sc;
 	
 }
-//If already defined Ignore the below definition
-status_code Display_Member_Info(unsigned int Member_Id)
+//Defined Twice(2 versions)
+status_code Display_Member_Info(NodeI *ptr)
 {
 	status_code sc=SUCCESS;
-	NodeI *ptr=Search_for_Member_pointer(Member_Id);
 
 	if(ptr==NULL)
 	{
@@ -314,6 +316,7 @@ status_code Display_Member_Info(unsigned int Member_Id)
 status_code Display_Group_Info(unsigned int Group_Id)
 {
 	status_code sc=SUCCESS;
+	unsigned int rank=1;
 	NodeG *ptr=Search_for_Group_Pointer(Group_Id);
 
 	if(ptr==NULL)
@@ -330,14 +333,64 @@ status_code Display_Group_Info(unsigned int Group_Id)
 			Display_Member_Info(ptr->Members[i]);
 		}
 		printf("\n\nWeekly Group Goal :  ",ptr->Weekly_Group_Goal);
-		printf("\nRank of the Group : ");
+		radixsort_groups_steps();
+		tptr=lptrG;
+		while(tptr!=ptr)
+		{
+			tptr++;
+			rank++;
+		}
+		printf("\nRank of the Group is %d",rank);
+		radixsort_groups_Id();
 	}
 	return sc;
 }
 
-unsigned int Compute_Number_Of_Steps_In_a_Week(NodeI *ptr)
+unsigned int Compute_Number_Of_Steps_In_a_Week(NodeI *nptr)
 {
-	//To be defined
+	unsigned int steps=0;
+	if(nptr==NULL)
+	{
+		steps=0;
+	}
+	else
+	{
+		for(int i=0;i<7;i++)
+		{
+			steps+=nptr->Weekly_Step_Count[i];
+		}
+	}
+	return steps;
+}
+
+unsigned int Compute_Number_Of_Steps_by_a_Group(NodeG *nptr)
+{
+	unsigned int steps=0;
+	if(nptr==NULL)
+	{
+		steps=0;
+	}
+	else
+	{
+		for(int i=0;i<5;i++)
+		{
+			steps+=Compute_Number_Of_Steps_In_a_Week(nptr->Members[i]);
+		}
+	}
+	return steps;
+}
+
+Boolean target_complete(NodeI* curr,unsigned int* steps){
+	Boolean res=TRUE;
+    for(int i=0;i<7 && res==TRUE;i++){
+		*steps+=curr->Weekly_Step_Count[i];
+		if(curr->Daily_Step_Goal>curr->Weekly_Step_Count[i]){
+			// The target is incomplete 
+			res=FALSE;
+		}
+	}
+	return res;
+	
 }
 
 Boolean Check_Group_Achievement(unsigned int Group_Id)
@@ -367,4 +420,326 @@ Boolean Check_Group_Achievement(unsigned int Group_Id)
 	}
 
 	return bool;
+}
+unsigned int getmax_GSteps()
+{
+	NodeI *ptr=lptrG;
+	unsigned int max=0,steps=0;
+
+	max=Compute_Number_Of_Steps_by_a_Group(ptr);
+	ptr=ptr->next;	
+	while(ptr!=NULL)
+	{
+		steps=Compute_Number_Of_Steps_by_a_Group(ptr);
+		if(steps>max)
+		{
+			max=steps;
+		}
+		ptr=ptr->next;
+	}
+	return steps;
+}
+unsigned int getmax_GId()
+{
+	NodeI *ptr=lptrG;
+	unsigned int max=0,Id=0;
+
+	max=ptr->Id;
+	ptr=ptr->next;	
+	while(ptr!=NULL)
+	{
+		Id=ptr->Id;
+		if(Id>max)
+		{
+			max=Id;
+		}
+		ptr=ptr->next;
+	}
+	return Id;
+}
+void InitHash(HashG *h)
+{
+	for(int i=0;i<9;i++)
+		(h->array[i])->front=(h->array[i])->rear=NULL;
+}
+Boolean isQueueEmpty(QueueG *q)
+{
+	Boolean bool;
+
+	if(q->front==q->rear==NULL)
+		bool=TRUE
+	else
+		bool=FALSE
+
+	return bool;
+}
+void InsertQueue(QueueG *q,NodeG *nptr)
+{
+	if(isQueueEmpty(&q))
+		q->front=q->rear=nptr;
+	else
+	{
+		q->rear->next=nptr;
+		q->rear=nptr;
+		nptr->next=NULL;
+	}
+}
+void radixsort_groups_steps()
+{
+	NodeG *ptr=lptrG,*next_ptr=NULL;
+	unsigned int digits=0,div=1,flag=0,max=0;
+	HashG h;
+
+	if(lptrG==NULL)
+	{
+		sc=FAILURE;
+	}
+	else{
+		max=getmax_GSteps();
+		
+		while(max!=0)
+		{
+			max=max/10;
+			digits++;
+		}
+		div=1;
+		for(int k=0;k<digits;k++)
+		{
+			ptr=lptrG;
+			while(ptr!=NULL)
+			{
+				next_ptr=ptr->next;
+				steps=Compute_Number_Of_Steps_by_a_Group(ptr);
+				steps=(steps/div)%10;
+				InsertQueue(&h->array[steps],&ptr);
+				ptr=next_ptr;
+			}
+			i=9;
+			while(isQueueEmpty(h->array[i]))
+				i--;
+
+			lptrG=h->array[i]->front;
+			
+			while((i>0)&&(flag==0))
+			{
+				j=i-1;
+				while((j>=0)&&(h->array[j]==NULL))
+				{
+					j--;
+				}
+				if(j<0)
+					flag==1;
+				else
+					(h->array[i]->rear)->next=h->array[j]->front;
+			}
+			InitHash(&h);
+			div=div*10;
+		}
+	}
+}
+void radixsort_groups_Id()
+{
+	NodeG *ptr=lptrG,*next_ptr=NULL;
+	unsigned int digits=0,div=1,flag=0,max=0;
+	HashG h;
+
+	if(lptrG==NULL)
+	{
+		sc=FAILURE;
+	}
+	else{
+		max=getmax_GId();
+		
+		while(max!=0)
+		{
+			max=max/10;
+			digits++;
+		}
+
+		div=1;
+		for(int k=0;k<digits;k++)
+		{
+			ptr=lptrG;
+			while(ptr!=NULL)
+			{
+				next_ptr=ptr->next;
+				Id=ptr->Id;
+				Id=(Id/div)%10;
+				InsertQueue(&h->array[Id],&ptr);
+				ptr=next_ptr;
+			}
+			i=9;
+			while(isQueueEmpty(h->array[i]))
+				i--;
+
+			lptrG=h->array[i]->front;
+			
+			while((i>0)&&(flag==0))
+			{
+				j=i-1;
+				while((j>=0)&&(h->array[j]==NULL))
+				{
+					j--;
+				}
+				if(j<0)
+					flag==1;
+				else
+					(h->array[i]->rear)->next=h->array[j]->front;
+			}
+			InitHash(&h);
+			div=div*10;
+		}
+	}
+}
+status_code Generate_Leader_Board()
+{
+	status_code sc=SUCCESS;
+	NodeG *ptr;
+	unsigned int r=1;
+
+	radixsort_groups_steps();
+	ptr=lptrG;
+	r=1;
+	while(ptr!=NULL)
+	{
+		printf("Rank = %d",r);
+		printf("\nGroup Id : ",Group_Id);
+		printf("\nGroup Name : ",ptr->Name);
+		printf("\nDetails of the Members");
+		for(int i=0;i<5;i++)
+		{
+			Display_Member_Info(ptr->Members[i]);
+		}
+		printf("\n\nWeekly Group Goal :  ",ptr->Weekly_Group_Goal);
+	}
+
+	radixsort_groups_Id();
+
+	return sc;
+
+}
+void get_top3list(){
+	
+	first=second=third=0;
+	NodeI* curr=lptrI;
+	while(curr!=NULL){
+		unsigned int steps=0;
+		Boolean check=target_complete(curr,&steps);
+		if(check==TRUE){
+			// The member has completed therir daily step goals
+
+			if(position[0]==NULL){
+				position[0]=curr;
+				first=steps;
+			}
+			else if(position[1]==NULL){
+				if(steps>first){
+					// The current one has more number of steps 
+					position[1]=position[0];
+					position[0]=curr;
+					second=first;
+					first=steps;
+				}
+				else{
+					position[1]=curr;
+					second=steps;
+				}
+			}
+			else if(position[2]==NULL){
+				if(steps>first){
+					position[2]=position[1];
+					position[1]=position[0];
+					position[0]=curr;
+					third=second;
+					second=first;
+					first=steps;
+				}
+				else if(steps>second){
+					position[2]=position[1];
+					position[1]=curr;
+					third=second;
+					second=steps;
+				}
+				else{
+					position[2]=curr;
+					third=steps;
+				}
+			}
+			else{
+				if(steps>first){
+					position[2]=position[1];
+					position[1]=position[0];
+					position[0]=curr;
+					third=second;
+					second=first;
+					first=steps;
+				}
+				else if(steps>second){
+					position[2]=position[1];
+					position[1]=curr;
+					third=second;
+					second=steps;
+				}
+				else if(steps>third){
+					position[2]=curr;
+					third=steps;
+				}
+				// If it don't eneter into any of the condition then this means that the member_steps < third;
+
+			}
+		}
+		curr=curr->next;
+	}
+	
+}
+void display_individualData(NodeI* head){
+	
+	printf("Name : %s\n",head->Name);
+	printf("ID : %u\n",head->Id);
+	printf("Age : %u\n",head->Age);
+	printf("Daily_step Goals : %u\n",head->Daily_Step_Goal);
+	printf(".........................................................\n");
+
+
+}
+status_code get_top3(){
+	printf("\n");
+	get_top3list();
+	// Now display it;
+	status_code sc=SUCCESS;
+	for(int i=0;i<3;i++){
+		if(position[i]==NULL){
+			sc=FAILURE;
+		}
+		else{
+			printf("Rank No. ---->>> %d\n",i);
+			display_individualData(position[i]);
+		}
+	}
+	if(sc==FAILURE){
+		printf("Only these members have completed their goals properly\n");
+	}
+	else{
+		printf("\nTotal steps covered by: \n");
+		printf("Rank 1 : %u\n",first);
+		printf("Rank 2 : %u\n",second);
+		printf("Rank 3 : %u\n",third);
+
+	}
+	return sc;
+}
+status_code check_individual_Rewards(unsigned int Member_Id){
+	status_code sc=SUCCESS;
+    int reward[3]={100,75,50};
+    int flag=0;
+	for(int i=0;i<3 && flag==0;i++){
+		if(position[i]->Id==Member_Id){
+			printf("ID : %u -->> Rank: %d Reward: %d\n",Member_Id,i+1,reward[i]);
+			flag=1;
+		}
+	}
+	if(flag==0){
+		printf("No reward is achieved\n");
+	}
+	return sc;
 }

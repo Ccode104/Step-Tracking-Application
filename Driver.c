@@ -40,7 +40,7 @@ void main()
 	 	}
 	 	Add_Person(nptrI);
 	}
-/*
+
 	for(int i=0;i<5;i++)
 	{
 		nptrG=CreateNodeG();
@@ -62,7 +62,7 @@ void main()
     	Create_Group(nptrG);
     	
 	}
-*/
+
 	fclose(ptr);
-}
+	}
 }

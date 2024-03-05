@@ -20,6 +20,19 @@ typedef struct NodeG_tag
 	struct NodeG_tag *next;
 } NodeG;
 
+/*Queue for Groups*/
+typedef struct QueueG_tag
+{
+	NodeG *front;
+	NodeG *rear;
+} QueueG;
+
+/*Hash Table to perform Radix Sort*/
+typedef struct HashG_tag
+{
+	QueueG array[10];
+} HashG;
+
 /*Status Code to trace the errors*/
 typedef enum{FAILURE,SUCCESS} status_code;
 
@@ -36,6 +49,9 @@ NodeG* Search_for_Group_pointer(unsigned int);
 
 /*Check if Unique Member*/
 Boolean Check_Unique(unsigned int);
+
+/*Compute the Number of Steps Completed by a Member in a week*/
+unsigned int Compute_Number_Of_Steps_In_a_Week(NodeI*);
 
 /*Create the Nodes*/
 void CreateNodeI(NodeI**);
@@ -56,3 +72,32 @@ status_code Merge_Groups(unsigned int,unsigned int);
 
 /*Display Group Info*/
 status_code Display_Group_Info(unsigned int);
+
+/*Check Group Achievement*/
+Boolean Check_Group_Achievement(unsigned int);
+
+/*Generate the Leader board for Groups*/
+status_code Generate_Leader_Board();
+
+/*Radix Sort Groups based on Id*/
+void radixsort_groups_Id();
+
+/*Radix Sort Groups based on Steps*/
+void radixsort_groups_steps();
+
+/*Insert an element in the Queue*/
+void InsertQueue(QueueG*,NodeG*);
+
+/*Checkif Queue is Empty*/
+Boolean isQueueEmpty(QueueG*);
+
+/*Initialise the Hashtable*/
+void InitHash(HashG*);
+
+/*Get the maximum Id of group*/
+unsigned int getmax_GId();
+
+/*Get teh maximum steps of group*/
+unsigned int getmax_GSteps();
+
+
