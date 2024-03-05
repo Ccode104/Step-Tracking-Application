@@ -43,7 +43,7 @@ void main()
 
 	for(int i=0;i<5;i++)
 	{
-		nptrG=CreateNodeG();
+		CreateNodeG(&nptrG);
 		fscanf(ptr,"%u",&nptrG->Id);
     	fgets(nptrG->Name,20,ptr);
     	
