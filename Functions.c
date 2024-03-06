@@ -543,7 +543,7 @@ Boolean Check_Group_Achievement(unsigned int Group_Id)
 		}
 		else{
 			bool=FALSE;
-			printf("\nThe group has not complted the Weekly Goal");
+			printf("\nThe group has not completed the Weekly Goal");
 		}
 	}
 
@@ -565,7 +565,7 @@ unsigned int getmax_GSteps()
 		}
 		ptr=ptr->next;
 	}
-	return steps;
+	return max;
 }
 unsigned int getmax_GId()
 {
@@ -587,27 +587,39 @@ unsigned int getmax_GId()
 }
 void InitHash(HashG *h)
 {
-	for(int i=0;i<9;i++)
-		(h->array[i]).front=(h->array[i]).rear=NULL;
+	for(int i=0;i<10;i++)
+	{
+		(h->array[i]).front=NULL;
+		(h->array[i]).rear=NULL;
+	}
 }
 Boolean isQueueEmpty(QueueG *q)
 {
 	Boolean bool;
 
 	if((q->front==NULL)&&(q->rear==NULL))
+	{
 		bool=TRUE;
+	}
 	else
+	{
 		bool=FALSE;
+	}
 
 	return bool;
 }
 void InsertQueue(QueueG *q,NodeG *nptr)
 {
 	if(isQueueEmpty(q))
-		q->front=q->rear=nptr;
+	{
+		//Empty Queue
+		q->front=nptr;
+		q->rear=nptr;
+		nptr->next=NULL;
+	}
 	else
 	{
-		q->rear->next=nptr;
+		(q->rear)->next=nptr;
 		q->rear=nptr;
 		nptr->next=NULL;
 	}
@@ -616,40 +628,59 @@ void radixsort_groups_steps()
 {
 	NodeG *ptr=lptrG,*next_ptr=NULL;
 	status_code sc=SUCCESS;
-	unsigned int digits=0,div=1,flag=0,max=0,steps=0,i=0,j=0;
-	HashG h;
+	unsigned int digits=0;//max number of digits
+	unsigned int div=1;//dividing factor to get digits
+	unsigned int flag=0;
+	unsigned int max=0;//max number of steps
+	unsigned int steps=0;//number of steps
+	int i=0,j=0;
+	HashG h;//Hashtable used for radix sort
 
+	InitHash(&h);
 	if(lptrG==NULL)
 	{
+		//Empty list
 		sc=FAILURE;
 	}
 	else{
+
+		//Get the maximum number of steps
 		max=getmax_GSteps();
+		//printf("\nmax steps=%u",max);
 		
-		while(max!=0)
+		//Max number of digits
+		while(max>0)
 		{
 			max=max/10;
-			digits++;
+			digits=digits+1;
 		}
+		//printf("\ndigits=%u",digits);
+		
 		div=1;
-		for(int k=0;k<digits;k++)
+		for(int k=0;k<6;k++)
 		{
 			ptr=lptrG;
 			while(ptr!=NULL)
 			{
 				next_ptr=ptr->next;
 				steps=Compute_Number_Of_Steps_by_a_Group(ptr);
+				printf("\nSteps=%u",steps);
 				steps=(steps/div)%10;
+				//printf("\nIndex=%u",steps);
 				InsertQueue(&h.array[steps],ptr);
 				ptr=next_ptr;
 			}
+			
 			i=9;
 			while(isQueueEmpty(&h.array[i]))
+			{
 				i--;
-
+			}
+			//printf("\ni=%d",i);
 			lptrG=h.array[i].front;
+			flag=0;
 			
-			while((i>0)&&(flag==0))
+			while((i>0)&&(flag!=1))
 			{
 				j=i-1;
 				while((j>=0)&&(isQueueEmpty(&h.array[j])))
@@ -657,7 +688,9 @@ void radixsort_groups_steps()
 					j--;
 				}
 				if(j<0)
-					flag==1;
+				{
+					flag=1;
+				}
 				else
 				{
 					(h.array[i].rear)->next=h.array[j].front;
@@ -673,6 +706,85 @@ void radixsort_groups_Id()
 {
 	NodeG *ptr=lptrG,*next_ptr=NULL;
 	status_code sc=SUCCESS;
+	unsigned int digits=0;//max number of digits
+	unsigned int div=1;//dividing factor to get digits
+	unsigned int flag=0;
+	unsigned int max=0;//max number of steps
+	unsigned int Id=0;//number of steps
+	int i=0,j=0;
+	HashG h;//Hashtable used for radix sort
+
+	InitHash(&h);
+	if(lptrG==NULL)
+	{
+		//Empty list
+		sc=FAILURE;
+	}
+	else{
+
+		//Get the maximum number of steps
+		max=getmax_GId();
+		//printf("\nmax Id=%u",max);
+		
+		//Max number of digits
+		while(max>0)
+		{
+			max=max/10;
+			digits=digits+1;
+		}
+		//printf("\ndigits=%u",digits);
+		
+		div=1;
+		for(int k=0;k<digits;k++)
+		{
+			ptr=lptrG;
+			while(ptr!=NULL)
+			{
+				next_ptr=ptr->next;
+				Id=ptr->Id;
+				//printf("\nId=%u",steps);
+				Id=(Id/div)%10;
+				//printf("\nIndex=%u",steps);
+				InsertQueue(&h.array[Id],ptr);
+				ptr=next_ptr;
+			}
+			
+			i=9;
+			while(isQueueEmpty(&h.array[i]))
+			{
+				i--;
+			}
+			//printf("\ni=%d",i);
+			lptrG=h.array[i].front;
+			flag=0;
+			
+			while((i>0)&&(flag!=1))
+			{
+				j=i-1;
+				while((j>=0)&&(isQueueEmpty(&h.array[j])))
+				{
+					j--;
+				}
+				if(j<0)
+				{
+					flag=1;
+				}
+				else
+				{
+					(h.array[i].rear)->next=h.array[j].front;
+					i=j;
+				}
+			}
+			InitHash(&h);
+			div=div*10;
+		}
+	}
+}
+/*
+void radixsort_groups_Id()
+{
+	NodeG *ptr=lptrG,*next_ptr=lptrG->next;
+	status_code sc=SUCCESS;
 	unsigned int digits=0,div=1,flag=0,max=0,i=0,j=0,Id=0;
 	HashG h;
 
@@ -682,7 +794,6 @@ void radixsort_groups_Id()
 	}
 	else{
 		max=getmax_GId();
-		
 		while(max!=0)
 		{
 			max=max/10;
@@ -723,7 +834,7 @@ void radixsort_groups_Id()
 			div=div*10;
 		}
 	}
-}
+}*/
 status_code Generate_Leader_Board()
 {
 	status_code sc=SUCCESS;
@@ -735,7 +846,7 @@ status_code Generate_Leader_Board()
 	r=1;
 	while(ptr!=NULL)
 	{
-		printf("Rank = %d",r);
+		printf("\nRank = %d",r);
 		printf("\nGroup Id  %u",ptr->Id);
 		printf("\nGroup Name %s ",ptr->Name);
 		printf("\nDetails of the Members");
@@ -744,6 +855,8 @@ status_code Generate_Leader_Board()
 			Display_Member_Info(ptr->Members[i]);
 		}
 		printf("\n\nWeekly Group Goal : %u ",ptr->Weekly_Group_Goal);
+		ptr=ptr->next;
+		r++;
 	}
 
 	radixsort_groups_Id();

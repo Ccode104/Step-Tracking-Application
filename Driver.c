@@ -68,8 +68,9 @@ void main()
 
 	fclose(ptr);
 	Display_Group_Info();
-	
-	//Check_Group_Achievement(1);
-	//Generate_Leader_Board();
+	printf("\n%u\n",getmax_GSteps());
+	//radixsort_groups_steps();
+	//Check_Group_Achievement(3);
+	Generate_Leader_Board();
 	}
 }
