@@ -68,8 +68,11 @@ void main()
 
 	fclose(ptr);
 	Display_Group_Info();
-	printf("\n%u\n",getmax_GSteps());
-	//radixsort_groups_steps();
+	//Check_Group_Achievement(3);
+	//Generate_Leader_Board();
+	//Delete_Group(5);
+	Merge_Groups(1,2);
+	Display_Group_Info();
 	//Check_Group_Achievement(3);
 	Generate_Leader_Board();
 	}
