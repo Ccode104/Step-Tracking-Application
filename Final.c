@@ -1422,6 +1422,7 @@ void main()
             else if (value == 5)
             {
                 // Generate Leader board
+                Generate_Leader_Board();
             }
             else if (value == 6)
             {
