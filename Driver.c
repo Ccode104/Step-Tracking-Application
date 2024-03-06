@@ -7,7 +7,7 @@
 void main()
 {
 	
-	NodeI *nptrI,*lptr;
+	NodeI *nptrI;
 	NodeG *nptrG;
 	unsigned int Member_Id[5];
 
@@ -51,17 +51,17 @@ void main()
     	fscanf(ptr,"%s",nptrG->Name);
     	//printf("\n%s",nptrG->Name);
 
-    	
+    	/*
     	for(int j=0;j<5;j++)
     	{
    	 		fscanf(ptr,"%u",&Member_Id[j]);
    	 		printf("\n%u",Member_Id[j]);	
-   		}
+   		}*/
     	//Store_Member_Pointers(nptrG,Member_Id);
 
     	fscanf(ptr,"%u",&nptrG->Weekly_Group_Goal);
     	//printf("\n%u",nptrG->Weekly_Group_Goal);
-    	Create_Group(nptrG);
+    	//Create_Group(nptrG);
     	
 
 	}

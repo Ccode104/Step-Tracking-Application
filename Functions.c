@@ -30,10 +30,11 @@ status_code Add_Person(NodeI *nptr)
 	if(lptrI==NULL)
 	{
 		lptrI=nptr;
+		nptr->next=NULL;
 	}
 	else
 	{
-		while(nptr->Id>ptr->Id){
+		while(nptr->Id<ptr->Id){
 			prev=ptr;
 			ptr=ptr->next;
 		}
