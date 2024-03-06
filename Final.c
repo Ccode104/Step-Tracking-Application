@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include<string.h>
 
 typedef enum
 {
@@ -54,73 +55,74 @@ typedef enum
     FALSE,
     TRUE
 } Boolean;
-// Helper Functions
+//Helper Functions
 /*Store the Member pointer in the Group*/
-status_code Store_Member_Pointers(NodeG *, unsigned int *);
+status_code Store_Member_Pointers(NodeG*,unsigned int*);
 
 /*Get the Member Pointer given the Member Id*/
-NodeI *Search_for_Member_pointer(unsigned int);
+NodeI* Search_for_Member_pointer(unsigned int);
 
 /*Get the Group Pointer given the Group Id*/
-NodeG *Search_for_Group_pointer(unsigned int);
+NodeG* Search_for_Group_pointer(unsigned int);
 
 /*Check if Unique Member*/
 Boolean Check_Unique(unsigned int);
 
 /*Compute the Number of Steps Completed by a Member in a week*/
-unsigned int Compute_Number_Of_Steps_In_a_Week(NodeI *);
+unsigned int Compute_Number_Of_Steps_In_a_Week(NodeI*);
 
 /*Compute the Number of Steps Completed by a Group in a week*/
-unsigned int Compute_Number_Of_Steps_by_a_Group(NodeG *);
+unsigned int Compute_Number_Of_Steps_by_a_Group(NodeG*);
 
 /*Create the Nodes*/
-void CreateNodeI(NodeI **);
-void CreateNodeG(NodeG **);
+void CreateNodeI(NodeI**);
+void CreateNodeG(NodeG**);
 
-// Main Functionalities
+//Main Functionalities
 /*Add a Person*/
-status_code Add_Person(NodeI *);
+status_code Add_Person(NodeI*);
 
-/Create a Group/
-status_code Create_Group(NodeG *);
+/*Create a Group*/
+status_code Create_Group(NodeG*);
 
-/Delete a Group/
+/*Delete a Group*/
 status_code Delete_Group(unsigned int);
 
-/Merge Groups/
-status_code Merge_Groups(unsigned int, unsigned int);
+/*Merge Groups*/
+status_code Merge_Groups(unsigned int,unsigned int);
 
-status_code Display_Member_Info(NodeI *);
+status_code Display_Member_Info(NodeI*);
 
-/Display Group Info/
+/*Display Group Info*/
 status_code Display_Group_Info();
 
-/Check Group Achievement/
+/*Check Group Achievement*/
 Boolean Check_Group_Achievement(unsigned int);
 
-/Generate the Leader board for Groups/
+/*Generate the Leader board for Groups*/
 status_code Generate_Leader_Board();
 
-/Radix Sort Groups based on Id/
+/*Radix Sort Groups based on Id*/
 void radixsort_groups_Id();
 
-/Radix Sort Groups based on Steps/
+/*Radix Sort Groups based on Steps*/
 void radixsort_groups_steps();
 
-/Insert an element in the Queue/
-void InsertQueue(QueueG *, NodeG *);
+/*Insert an element in the Queue*/
+void InsertQueue(QueueG*,NodeG*);
 
-/Checkif Queue is Empty/
-Boolean isQueueEmpty(QueueG *);
+/*Checkif Queue is Empty*/
+Boolean isQueueEmpty(QueueG*);
 
-/Initialise the Hashtable/
-void InitHash(HashG *);
+/*Initialise the Hashtable*/
+void InitHash(HashG*);
 
-/Get the maximum Id of group/
+/*Get the maximum Id of group*/
 unsigned int getmax_GId();
 
-/Get teh maximum steps of group/
+/*Get teh maximum steps of group*/
 unsigned int getmax_GSteps();
+
 
 NodeI *lptrI = NULL;
 NodeG *lptrG = NULL;
@@ -1267,7 +1269,7 @@ void main()
     else
     {
 
-        /Input the Individual Details/
+        /*Input the Individual Details*/
         for (int j = 0; j < 20; j++)
         {
 
@@ -1329,8 +1331,7 @@ void main()
                 if (sc == SUCCESS)
                 {
                     printf("Enter the Name: ");
-                    fflush(stdin);
-                    gets(nptr->Name);
+                    scanf("%s",nptr->Name);
                     printf("Enter the Age: ");
                     scanf("%u", &nptr->Age);
                     nptr->belong = 0;
@@ -1363,7 +1364,7 @@ void main()
                 {
                     printf("Enter the Name: ");
                     fflush(stdin);
-                    gets(nptr->Name);
+                    scanf("%s",nptr->Name);
                     printf("Enter the weekly group goals :");
                     scanf("%u", &nptr->Weekly_Group_Goal);
                     unsigned int memberid;
