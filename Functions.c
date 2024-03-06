@@ -30,26 +30,33 @@ status_code Add_Person(NodeI *nptr)
 	if(lptrI==NULL)
 	{
 		lptrI=nptr;
-		nptr->next=NULL;
+		//nptr->next=NULL;
 	}
 	else
 	{
-		while(nptr->Id<ptr->Id){
+		while((ptr!=NULL)&&(nptr->Id>ptr->Id)){
 			prev=ptr;
 			ptr=ptr->next;
 		}
-		if(ptr->Id==nptr->Id){
-			sc=FAILURE;
-		}
-		else{
-			if(prev==NULL){
-				nptr->next=lptrI;
-				lptrI=nptr;
+		if(ptr!=NULL)
+		{
+			if(ptr->Id==nptr->Id){
+				sc=FAILURE;
 			}
 			else{
-				nptr->next=ptr;
-				prev->next=nptr;
+				if(prev==NULL){
+					nptr->next=lptrI;
+					lptrI=nptr;
+				}
+				else{
+					nptr->next=ptr;
+					prev->next=nptr;
+				}
 			}
+		}
+		else
+		{
+			prev->next=nptr;
 		}
 	}
 	return sc;
@@ -70,28 +77,33 @@ status_code Create_Group(NodeG *nptr)
 	}
 	else
 	{
-		while(nptr->Id>ptr->Id)
+		while((ptr!=NULL)&&(nptr->Id>ptr->Id))
 		{ 
 			//The Id of the Group to be inserted is larger
 			prev=ptr;
 			ptr=ptr->next;
 		}
-
-		if(ptr->Id==nptr->Id)
+		if(ptr!=NULL)
 		{
-			sc=FAILURE;
-		}
-		else{
-			if(prev==NULL)
+			if(ptr->Id==nptr->Id)
 			{
-				//Insert At Start
-				nptr->next=lptrG;
-				lptrG=nptr;
+				sc=FAILURE;
 			}
 			else{
-				nptr->next=ptr;
-				prev->next=nptr;
+				if(prev==NULL)
+				{
+					//Insert At Start
+					nptr->next=lptrG;
+					lptrG=nptr;
+				}
+				else{
+					nptr->next=ptr;
+					prev->next=nptr;
+				}
 			}
+		}
+		else{
+			prev->next=nptr;
 		}
 	}
 	return sc;
@@ -424,11 +436,11 @@ status_code Display_Member_Info(NodeI *ptr)
 	return sc;
 }
 
-status_code Display_Group_Info(unsigned int Group_Id)
+status_code Display_Group_Info()
 {
 	status_code sc=SUCCESS;
 	unsigned int rank=1;
-	NodeG *ptr=Search_for_Group_pointer(Group_Id),*tptr=ptr;
+	NodeG *ptr=lptrG,*tptr=ptr;
 
 	if(ptr==NULL)
 	{
@@ -436,14 +448,16 @@ status_code Display_Group_Info(unsigned int Group_Id)
 	}
 	else
 	{
-		printf("\nGroup Id : %u ",Group_Id);
-		printf("\nGroup Name : %s ",ptr->Name);
-		printf("\nDetails of the Members");
-		for(int i=0;i<5;i++)
+		while(ptr!=NULL)
 		{
-			Display_Member_Info(ptr->Members[i]);
-		}
-		printf("\n\nWeekly Group Goal : %u ",ptr->Weekly_Group_Goal);
+			printf("\nGroup Id : %u ",ptr->Id);
+			printf("\nGroup Name : %s ",ptr->Name);
+			printf("\nDetails of the Members");
+			for(int i=0;i<5;i++)
+			{
+				Display_Member_Info(ptr->Members[i]);
+			}
+			printf("\n\nWeekly Group Goal : %u ",ptr->Weekly_Group_Goal);
 		/*radixsort_groups_steps();
 		tptr=lptrG;
 		while(tptr!=ptr)
@@ -453,6 +467,8 @@ status_code Display_Group_Info(unsigned int Group_Id)
 		}
 		printf("\nRank of the Group is %d",rank);
 		radixsort_groups_Id();*/
+			ptr=ptr->next;
+		}
 	}
 	return sc;
 }

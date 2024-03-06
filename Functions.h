@@ -80,7 +80,7 @@ status_code Merge_Groups(unsigned int,unsigned int);
 status_code Display_Member_Info(NodeI*);
 
 /*Display Group Info*/
-status_code Display_Group_Info(unsigned int);
+status_code Display_Group_Info();
 
 /*Check Group Achievement*/
 Boolean Check_Group_Achievement(unsigned int);
