@@ -1,4 +1,5 @@
 #include<stdio.h>
+#include<stdlib.h>
 #include"Functions.h"
 
 
@@ -6,8 +7,9 @@
 void main()
 {
 	
-	NodeI *nptrI;
+	NodeI *nptrI,*lptr;
 	NodeG *nptrG;
+	unsigned int Member_Id[5];
 
 	//Input the details
     FILE* ptr = fopen("data.txt", "r");
@@ -45,24 +47,29 @@ void main()
 	{
 		CreateNodeG(&nptrG);
 		fscanf(ptr,"%u",&nptrG->Id);
-    	fgets(nptrG->Name,20,ptr);
+		//printf("\n%u",nptrG->Id);
+    	fscanf(ptr,"%s",nptrG->Name);
+    	//printf("\n%s",nptrG->Name);
+
     	
     	for(int j=0;j<5;j++)
     	{
-    		fscanf(ptr,"%u",&nptrG->Member_Id[j]);	
-    	}
-
-    	for(int j=0;j<5;j++)
-    	{
-    		//Get member pointers given the Id and store them in Node
-    		Store_Member_Pointers(nptrG);
-    	}
+   	 		fscanf(ptr,"%u",&Member_Id[j]);
+   	 		printf("\n%u",Member_Id[j]);	
+   		}
+    	//Store_Member_Pointers(nptrG,Member_Id);
 
     	fscanf(ptr,"%u",&nptrG->Weekly_Group_Goal);
+    	//printf("\n%u",nptrG->Weekly_Group_Goal);
     	Create_Group(nptrG);
     	
+
 	}
 
 	fclose(ptr);
+	//Display_Group_Info(1);
+	
+	//Check_Group_Achievement(1);
+	//Generate_Leader_Board();
 	}
 }

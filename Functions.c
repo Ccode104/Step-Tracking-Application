@@ -11,6 +11,7 @@ NodeI *position[3];
 void CreateNodeI(NodeI **npptr)
 {
 	*npptr=(NodeI*)malloc(sizeof(NodeI));
+	(*npptr)->belong=0;
 	(*npptr)->next=NULL;
 }
 
@@ -32,7 +33,7 @@ status_code Add_Person(NodeI *nptr)
 	}
 	else
 	{
-		while(ptr->Id>nptr->Id){
+		while(nptr->Id>ptr->Id){
 			prev=ptr;
 			ptr=ptr->next;
 		}
@@ -64,7 +65,7 @@ status_code Create_Group(NodeG *nptr)
 	{
 		//Empty list
 		lptrG=nptr;
-		nptr->next=NULL;
+		//nptr->next=NULL;
 	}
 	else
 	{
@@ -105,6 +106,9 @@ NodeI* Search_for_Member_pointer(unsigned int Member_Id)
     if(ptr!=NULL){
         Member_ptr=ptr;
     }
+    else{
+    	printf("Not found");
+    }
     return Member_ptr;
 }
 
@@ -121,34 +125,54 @@ NodeG* Search_for_Group_pointer(unsigned int Group_Id)
     return Group_ptr;
 }
 
-status_code Store_Member_Pointers(NodeG *nptr)
+status_code Store_Member_Pointers(NodeG *nptr,unsigned int Member_Id[])
 {
 	status_code sc=SUCCESS;
 
 	for(int i=0;i<5;i++)
 	{
-		if((nptr->Member_Id[i]!=-1)&&(Check_Unique(nptr->Member_Id[i])))
-			nptr->Members[i]=Search_for_Member_pointer(nptr->Member_Id[i]);
+		if((Member_Id[i]!=0))
+		{
+			nptr->Members[i]=Search_for_Member_pointer(Member_Id[i]);
+			if(nptr->Members[i]->belong==1)
+			{
+				nptr->Members[i]=NULL;
+			}
+			else{
+				nptr->Members[i]->belong=1;
+			}
+
+		}
 		else
+		{
+			//printf("NULL");
 			nptr->Members[i]=NULL;
+		}
 	}
 
 	return sc;
 }
-
+/*
 Boolean Check_Unique(unsigned int Member_Id)
 {
 	NodeG *ptr=lptrG;
 	Boolean bool=TRUE;
 
-	while((ptr!=NULL)&&(bool))
+	while((ptr!=NULL)&&(bool==TRUE))
 	{
-		for(int i=0;i<5,bool;i++)
-			if(Member_Id==ptr->Member_Id[i])
-				bool=FALSE;
+		for(int i=0;i<5,bool==TRUE;i++)
+			{
+				if(Member_Id==ptr->Member_Id[i])
+				{
+					bool=FALSE;
+				}else{
+					bool=TRUE;
+				}
+			}
+		ptr=ptr->next;
 	}
 	return bool;
-}
+}*/
 
 status_code Delete_Group(unsigned int Group_Id)
 {
@@ -387,9 +411,11 @@ status_code Display_Member_Info(NodeI *ptr)
 	if(ptr==NULL)
 	{
 		sc=FAILURE;
+		printf("Error");
 	}
 	else
 	{
+		
 		printf("\nMember Id : %u ",ptr->Id);
 		printf("\nMember Name : %s ",ptr->Name);
 		printf("\nMember Age : %u ",ptr->Age);
@@ -417,7 +443,7 @@ status_code Display_Group_Info(unsigned int Group_Id)
 			Display_Member_Info(ptr->Members[i]);
 		}
 		printf("\n\nWeekly Group Goal : %u ",ptr->Weekly_Group_Goal);
-		radixsort_groups_steps();
+		/*radixsort_groups_steps();
 		tptr=lptrG;
 		while(tptr!=ptr)
 		{
@@ -425,7 +451,7 @@ status_code Display_Group_Info(unsigned int Group_Id)
 			rank++;
 		}
 		printf("\nRank of the Group is %d",rank);
-		radixsort_groups_Id();
+		radixsort_groups_Id();*/
 	}
 	return sc;
 }
@@ -616,7 +642,10 @@ void radixsort_groups_steps()
 				if(j<0)
 					flag==1;
 				else
+				{
 					(h.array[i].rear)->next=h.array[j].front;
+					i=j;
+				}
 			}
 			InitHash(&h);
 			div=div*10;
