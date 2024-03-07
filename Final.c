@@ -123,7 +123,6 @@ unsigned int getmax_GId();
 /*Get teh maximum steps of group*/
 unsigned int getmax_GSteps();
 
-//NodeG *lptrR=NULL;
 NodeI *lptrI = NULL;
 NodeG *lptrG = NULL;
 unsigned int first, second, third;
@@ -1065,47 +1064,6 @@ status_code Generate_Leader_Board()
     return sc;
 
 }
-/*
-void CopyNode(NodeG *nptr,NodeG *ptr)
-{
-    nptr->Id=ptr->Id;
-    strcpy(nptr->Name,ptr->Name);
-    for(int i=0;i<5;i++)
-    {
-        nptr->Members[i]=ptr->Members[i];
-    }
-    nptr->Weekly_Group_Goal=ptr->Weekly_Group_Goal;
-}
-void InsertAtStartR(NodeG *ptr)
-{
-    if(lptrR==NULL)
-    {
-        lptrR=ptr;
-    }
-    else
-    {
-        ptr->next=lptrR;
-        lptrR=ptr;
-    }
-}
-void CopyListG()
-{
-    NodeG *lptrR=lptrG;
-    NodeG *ptr=lptrR,*nptrG;
-
-    while(ptr!=NULL)
-    {
-        CreateNodeG(&nptrG);
-        CopyNode(nptrG,ptr);
-        InsertAtStartR(nptrG);
-    }
-}
-void SetUp()
-{
-    CopyList();
-    radixsort_group_steps(lptrR);
-}
-*/
 
 void get_top3list()
 {
