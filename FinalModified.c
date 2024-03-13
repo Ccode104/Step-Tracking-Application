@@ -57,12 +57,13 @@ typedef enum
     TRUE
 } Boolean;
 
-typedef enum
+/*typedef enum
 {
 	NOT,
 	ID,
 	STEPS
 } sorted;
+*/
 
 //Helper Functions
 /*Store the Member pointer in the Group*/
@@ -129,14 +130,14 @@ void InitHash(HashG*);
 /*Get the maximum Id of group*/
 unsigned int getmax_GId();
 
-/*Get teh maximum steps of group*/
+/*Get the maximum steps of group*/
 unsigned int getmax_GSteps();
 
 NodeI *lptrI = NULL;
 NodeG *lptrG = NULL;
 unsigned int first, second, third;
 NodeI *position[3];
-sorted s=NOT;
+//sorted s=NOT;
 
 void CreateNodeI(NodeI **npptr)
 {
@@ -161,7 +162,7 @@ status_code Add_Person(NodeI *nptr)
     {
         // 0 node case;
         lptrI = nptr;
-        // nptr->next=NULL;
+        nptr->next=NULL;
     }
     else
     {
@@ -203,7 +204,6 @@ status_code Create_Group(NodeG *nptr)
 {
     NodeG *ptr = lptrG;
     NodeG *prev = NULL;
-    
     status_code sc = SUCCESS;
 
     if (lptrG == NULL)
@@ -211,13 +211,40 @@ status_code Create_Group(NodeG *nptr)
         // Empty list
         lptrG = nptr;
         nptr->next=NULL;
-	    s = ID;
     }
     else
     {
-        nptr->next = lptrG;
-	    lptrG = nptr;
-	    s = NOT;
+        while ((ptr != NULL) && (nptr->Id > ptr->Id))
+        {
+            // The Id of the Group to be inserted is larger
+            prev = ptr;
+            ptr = ptr->next;
+        }
+        if (ptr != NULL)
+        {
+            if (ptr->Id == nptr->Id)
+            {
+                sc = FAILURE;
+            }
+            else
+            {
+                if (prev == NULL)
+                {
+                    // Insert At Start
+                    nptr->next = lptrG;
+                    lptrG = nptr;
+                }
+                else
+                {
+                    nptr->next = ptr;
+                    prev->next = nptr;
+                }
+            }
+        }
+        else
+        {
+            prev->next = nptr;
+        }
     }
     return sc;
 }
@@ -245,12 +272,6 @@ NodeG *Search_for_Group_pointer(unsigned int Group_Id)
 {
     NodeG *Group_ptr = NULL;
     NodeG *ptr = lptrG;
-
-    if(s!=ID)
-    {
-        radixsort_groups_Id();
-        s=ID;
-    }
 
     while (ptr != NULL && ptr->Id < Group_Id)
     {
@@ -290,27 +311,7 @@ status_code Store_Member_Pointers(NodeG *nptr, unsigned int Member_Id[])
 
     return sc;
 }
-/*
-Boolean Check_Unique(unsigned int Member_Id)
-{
-    NodeG *ptr=lptrG;
-    Boolean bool=TRUE;
 
-    while((ptr!=NULL)&&(bool==TRUE))
-    {
-        for(int i=0;i<5,bool==TRUE;i++)
-            {
-                if(Member_Id==ptr->Member_Id[i])
-                {
-                    bool=FALSE;
-                }else{
-                    bool=TRUE;
-                }
-            }
-        ptr=ptr->next;
-    }
-    return bool;
-}*/
 void Mark_belongs_as_zero(NodeG *head)
 {
     for (int i = 0; i < 5; i++)
@@ -327,13 +328,7 @@ status_code Delete_Group(unsigned int Group_Id)
     NodeG *ptr = lptrG;
     NodeG *prev = NULL;
     status_code sc = SUCCESS;
-
-    if(s != ID)
-    {
-	  radixsort_groups_Id();
-	  s = ID;
-    }
-
+  
     while ((ptr != NULL) && (ptr->Id < Group_Id))
     {
         prev = ptr;
@@ -360,90 +355,10 @@ status_code Delete_Group(unsigned int Group_Id)
             free(ptr);
         }
     }
+    
     return sc;
 }
-/*
-status_code Merge_Groups(unsigned int Group_Id_1,unsigned int Group_Id_2)
-{
-    NodeG *ptr=lptrG;
-    NodeG *prev=NULL;
-    NodeG *nptr,*tptr,*tprev;
-    CreateNodeG(&nptr);
 
-    status_code sc=SUCCESS;
-    unsigned int t;
-
-
-    if(Group_Id_1>Group_Id_2)
-    {
-        t=Group_Id_1;
-        Group_Id_1=Group_Id_2;
-        Group_Id_2=t;
-    }
-
-    while((ptr!=NULL)&&(ptr->Id!=Group_Id_1))
-    {
-        prev=ptr;
-        ptr=ptr->next;
-    }
-
-    if(ptr==NULL)
-    {
-        sc=FAILURE;
-    }
-    else
-    {
-        nptr->Id=Group_Id_1;
-        printf("\nEnter the Group Name\t");
-        scanf("%s",nptr->Name);
-        i=0;
-        while(ptr->Members[i]!=NULL)
-        {
-            nptr->Members[i]=ptr->Members[i];
-            i++;
-        }
-        printf("\nEnter the Weekly Group Goal\t");
-        scanf("%u",&nptr->Weekly_Group_Goal);
-
-        tptr=ptr;
-        tprev=prev;
-
-        ptr=tptr->next;
-        while((ptr!=NULL)&&(ptr->ID!=Group_Id_2))
-        {
-            prev=ptr;
-            ptr=ptr->next;
-        }
-        //prev cannot be NULL
-        prev->next=ptr->next;
-
-        while((i+j)<5)
-        {
-            nptr->Members[i+j]=ptr->Members[j];
-            j++;
-        }
-        if(tptr->Members[j]==NULL)
-        {
-            if(tprev==NULL)
-            {
-                nptr->next=lptrG;
-                lptrG=nptr;
-                free(tptr);
-            }
-            else
-            {
-                tprev->next=nptr;
-                nptr->next=tptr->next;
-                free(tptr);
-            }
-        }
-        else
-        {
-            sc=FAILURE;
-        }
-    }
-
-}*/
 status_code Merge_Groups(unsigned int Group_Id_1, unsigned int Group_Id_2)
 {
 
@@ -454,12 +369,6 @@ status_code Merge_Groups(unsigned int Group_Id_1, unsigned int Group_Id_2)
     group1 = group2 = NULL;
     NodeG *group1_prev, *group2_prev;
     group1_prev = group2_prev = NULL;
-
-    if(s != ID)
-    {
-	  radixsort_groups_Id();
-	  s = ID;
-    }
 
     while (head != NULL)
     {
@@ -622,7 +531,45 @@ status_code Display_Member_Info(NodeI *ptr)
     }
     return sc;
 }
+status_code Display_Group_Info_by_Id(unsigned int Id)
+{
+    status_code sc=SUCCESS;
+    NodeG *gptr=Search_for_Group_pointer(Id);
+    NodeG *ptr=lptrG;
+    unsigned int rank=1;
 
+    if(gptr==NULL)
+    {
+        sc=FAILURE;
+        printf("\nThe group does not exist!\n");
+    }
+    else{
+        radixsort_groups_steps();
+        ptr=lptrG;
+        rank=1;
+        while(ptr!=gptr)
+        {
+            rank++;
+            ptr=ptr->next;
+        }
+
+        radixsort_groups_Id();
+       
+        printf("\nRank of the Group is %u\n",rank);
+        printf("\nGroup Id : %u ",gptr->Id);
+        printf("\nGroup Name : %s ",gptr->Name);
+        printf("\nDetails of the Members");
+        for(int i=0;i<5;i++)
+        {
+            Display_Member_Info(gptr->Members[i]);
+        }
+        printf("\nWeekly Group Goal : %u \n",gptr->Weekly_Group_Goal);
+    }
+    return sc;
+
+
+
+}
 status_code Display_Group_Info()
 {
     status_code sc=SUCCESS;
@@ -635,11 +582,7 @@ status_code Display_Group_Info()
     }
     else
     {
-        if(s!=STEPS)
-        {
-            radixsort_groups_steps();
-            s=STEPS;
-        }
+        radixsort_groups_steps();
 
         ptr=lptrG;
         rank=1;
@@ -651,7 +594,7 @@ status_code Display_Group_Info()
         }
 
         radixsort_groups_Id();
-        s=ID;
+       
 
         ptr=lptrG;
 
@@ -746,12 +689,12 @@ Boolean Check_Group_Achievement(unsigned int Group_Id)
         if (count >= ptr->Weekly_Group_Goal)
         {
             bool = TRUE;
-            printf("\nThe group has completed the Weekly Goal");
+            printf("\nThe group has completed the Weekly Goal of %u Steps by walking %u Steps in a Week",ptr->Weekly_Group_Goal,Compute_Number_Of_Steps_by_a_Group(ptr));
         }
         else
         {
             bool = FALSE;
-            printf("\nThe group has not completed the Weekly Goal");
+            printf("\nThe group has not completed the Weekly Goal of %u Steps by walking %u Steps in a Week",ptr->Weekly_Group_Goal,Compute_Number_Of_Steps_by_a_Group(ptr));
         }
     }
 
@@ -1001,75 +944,14 @@ void radixsort_groups_Id()
         }
     }
 }
-/*
-void radixsort_groups_Id()
-{
-    NodeG *ptr=lptrG,*next_ptr=lptrG->next;
-    status_code sc=SUCCESS;
-    unsigned int digits=0,div=1,flag=0,max=0,i=0,j=0,Id=0;
-    HashG h;
 
-    if(lptrG==NULL)
-    {
-        sc=FAILURE;
-    }
-    else{
-        max=getmax_GId();
-        while(max!=0)
-        {
-            max=max/10;
-            digits++;
-        }
-
-        div=1;
-        for(int k=0;k<digits;k++)
-        {
-            ptr=lptrG;
-            while(ptr!=NULL)
-            {
-                next_ptr=ptr->next;
-                Id=ptr->Id;
-                Id=(Id/div)%10;
-                InsertQueue(&h.array[Id],ptr);
-                ptr=next_ptr;
-            }
-            i=9;
-            while(isQueueEmpty(&h.array[i]))
-                i--;
-
-            lptrG=h.array[i].front;
-            
-            while((i>0)&&(flag==0))
-            {
-                j=i-1;
-                while((j>=0)&&(isQueueEmpty(&h.array[j])))
-                {
-                    j--;
-                }
-                if(j<0)
-                    flag==1;
-                else
-                    (h.array[i].rear)->next=(h.array[j]).front;
-            }
-            InitHash(&h);
-            div=div*10;
-        }
-    }
-}
-
-*/
 status_code Generate_Leader_Board()
 {
     status_code sc=SUCCESS;
     NodeG *ptr;
     unsigned int r=1;
 
-    if(s != STEPS)
-    {
-	  radixsort_groups_steps();
-	  s = STEPS;
-    }
-
+    radixsort_groups_steps();
     ptr=lptrG;
     r=1;
     while(ptr!=NULL)
@@ -1080,6 +962,7 @@ status_code Generate_Leader_Board()
         ptr=ptr->next;
         r++;
     }
+    radixsort_groups_Id();
 
     return sc;
 
@@ -1541,12 +1424,17 @@ void main()
                 scanf("%u%u", &id1, &id2);
 
                 sc = Merge_Groups(id1, id2);
+                Display_Group_Info();
             }
 
             else if (value == 10)
             {
-                printf("\nDetails of all the Groups\n");
-                Display_Group_Info();
+                unsigned int id;
+
+                printf("Enter the Group id to whose info is to be dispalyed:  ");
+                scanf("%u",&id);
+                printf("\nDetails of the Group :\n");
+                Display_Group_Info_by_Id(id);
             }
             else if (value == 11)
             {
