@@ -7,6 +7,7 @@ typedef enum
     NO,
     YES
 } belongs;
+
 /*Node for Individuals*/
 typedef struct NodeI_tag
 {
@@ -57,13 +58,7 @@ typedef enum
     TRUE
 } Boolean;
 
-/*typedef enum
-{
-	NOT,
-	ID,
-	STEPS
-} sorted;
-*/
+
 
 //Helper Functions
 /*Store the Member pointer in the Group*/
@@ -137,7 +132,7 @@ NodeI *lptrI = NULL;
 NodeG *lptrG = NULL;
 unsigned int first, second, third;
 NodeI *position[3];
-//sorted s=NOT;
+
 
 void CreateNodeI(NodeI **npptr)
 {
@@ -980,54 +975,6 @@ void get_top3list()
         if (check == TRUE)
         {
             // The member has completed therir daily step goals
-
-            if (position[0] == NULL)
-            {
-                position[0] = curr;
-                first = steps;
-            }
-            else if (position[1] == NULL)
-            {
-                if (steps > first)
-                {
-                    // The current one has more number of steps
-                    position[1] = position[0];
-                    position[0] = curr;
-                    second = first;
-                    first = steps;
-                }
-                else
-                {
-                    position[1] = curr;
-                    second = steps;
-                }
-            }
-            else if (position[2] == NULL)
-            {
-                if (steps > first)
-                {
-                    position[2] = position[1];
-                    position[1] = position[0];
-                    position[0] = curr;
-                    third = second;
-                    second = first;
-                    first = steps;
-                }
-                else if (steps > second)
-                {
-                    position[2] = position[1];
-                    position[1] = curr;
-                    third = second;
-                    second = steps;
-                }
-                else
-                {
-                    position[2] = curr;
-                    third = steps;
-                }
-            }
-            else
-            {
                 if (steps > first)
                 {
                     position[2] = position[1];
@@ -1050,7 +997,7 @@ void get_top3list()
                     third = steps;
                 }
                 // If it don't eneter into any of the condition then this means that the member_steps < third;
-            }
+            
         }
         curr = curr->next;
     }
