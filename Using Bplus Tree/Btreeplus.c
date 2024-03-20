@@ -1,3 +1,11 @@
+#define CAPACITY 5
+#define ORDER 4
+
+#include<stdlib.h>
+#include<stdio.h>
+
+typedef enum{NO,YES} belongs;
+
 /*Node for Individuals*/
 typedef struct NodeI_tag
 {
@@ -8,7 +16,6 @@ typedef struct NodeI_tag
     unsigned int Daily_Step_Goal;
     unsigned int Weekly_Step_Count[7];
     belongs belong;
-    struct NodeI_tag *next;
 } NodeI;
 
 /*Node type for Group*/
@@ -19,7 +26,6 @@ typedef struct NodeG_tag
     char Name[20];
     NodeI *Members[5];
     unsigned int Weekly_Group_Goal;
-    struct NodeG_tag *next;
 } NodeG;
 
 typedef struct Data_NodeG_tag
@@ -33,7 +39,7 @@ typedef struct Bptree_NodeG_tag
 	unsigned int key[ORDER];
 	union u_tag
 	{
-		struct Bptree_NodeG *child[ORDER+1];
+		struct Bptree_NodeG_tag *child[ORDER+1];
 		Data_NodeG *data_ptr[ORDER+1];
 	} u;
 	char child_type;//k or d
@@ -62,11 +68,28 @@ Bptree_NodeG* Create_Bptree_NodeG()
 	//Initialise the data node child to NULL(assuming them to be leaf tree type nodes by default)
 	for(int i=0;i<ORDER;i++)
 	{
-		nptr->u->data_ptr=NULL;
+		nptr->u.data_ptr[i]=NULL;
 		nptr->key[i]=-1;
 	}
 
 	return nptr;
+}
+Bptree_NodeG* Search_for_id(unsigned int id,Bptree_NodeG *root)
+{
+	int i=0;
+	while(root->key[i]!=-1)
+	{
+		if(id>root->key[i])
+		{
+			//Continue
+		}
+		else
+		{
+			if(root->child_type='k')
+				root=Search_for_id(id,root->u.child[i+1]);
+		}
+	}
+	return root;
 }
 Bptree_NodeG* InsertNodeG(Bptree_NodeG *root,NodeG *nptr)
 {
@@ -83,17 +106,17 @@ Bptree_NodeG* InsertNodeG(Bptree_NodeG *root,NodeG *nptr)
 		dptr->val[0]=*nptr;
 
 		//Set the data node as the child
-		root->u->data_ptr[1]=dptr;
+		root->u.data_ptr[1]=dptr;
 	}
 	else{
 		//The tree has 1 or more nodes
 
 		//Get the tree node containing the key to be searched
-		Bptree_NodeG *ptr=Search_for_id(id);
+		Bptree_NodeG *ptr=Search_for_id(nptr->Id,root);
 
 		//Find where to insert the key in that tree node 
 		int i=0;
-		while(ptr->key[i]!=-1)&&(nptr->Id>ptr->key[i])
+		while((ptr->key[i]!=-1)&&(nptr->Id>ptr->key[i]))
 		{
 			i++;
 		}
@@ -121,12 +144,12 @@ Bptree_NodeG* InsertNodeG(Bptree_NodeG *root,NodeG *nptr)
 			}
 
 			//Create a new data node in case of need
-			Data_NodeG *dptr=ptr->u->data_ptr;
+			Data_NodeG *dptr=ptr->u.data_ptr[insert_at_index];
 			Data_NodeG *dptr_next=Create_Data_NodeG();
 
 			//Traverse through the data node group Ids
 			int i=0;
-			while(dptr->val[i]!=-1)&&(dptr->val[i].Id<nptr->Id)
+			while((dptr->val[i].Id!=-1)&&(dptr->val[i].Id<nptr->Id))
 			{
 				i++;
 			}
