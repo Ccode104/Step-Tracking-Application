@@ -1,3 +1,14 @@
+/*DSPD2 Assignment
+Topic:Step Tracking Application
+
+Name:Abhishek Prashant Chandurkar
+Roll No:BT22CSE104
+
+Name:Manas Jungade
+Roll No:BT22CSE127
+
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include<string.h>
@@ -9,6 +20,12 @@ typedef enum
 } belongs;
 
 /*Node for Individuals*/
+typedef struct NodeI_Pointers_tag
+{
+    NodeI *ptr;
+    struct NodeI_Pointers_tag *next; 
+} NodeI_Pointers;
+
 typedef struct NodeI_tag
 {
     unsigned int Id;
@@ -27,7 +44,7 @@ typedef struct NodeG_tag
     unsigned int Id;
     unsigned int Rank;
     char Name[20];
-    NodeI *Members[5];
+    NodeI_Pointers *Members_lptr;
     unsigned int Weekly_Group_Goal;
     struct NodeG_tag *next;
 } NodeG;
@@ -282,6 +299,8 @@ NodeG *Search_for_Group_pointer(unsigned int Group_Id)
 status_code Store_Member_Pointers(NodeG *nptr, unsigned int Member_Id[])
 {
     status_code sc = SUCCESS;
+
+    nptr->Members_lptr=NULL;
 
     for (int i = 0; i < 5; i++)
     {
