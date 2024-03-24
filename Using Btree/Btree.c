@@ -39,10 +39,15 @@ typedef struct treenodeG {
 	struct treenodeG *branch[MAX +1];
 } TreenodeG;
 
+/*Group Functions*/
 Boolean SearchNodeG(Key,TreenodeG*,int*);
 Boolean PushdownG(TreeentryG newentry,TreenodeG *current,TreeentryG *medentry,TreenodeG **medright);
 void PushInG(TreeentryG medentry,TreenodeG *medright,TreenodeG *current,int pos);
-void Split(TreeentryG,TreenodeG *,TreenodeG *,int,TreeentryG *,TreenodeG **);
+void SplitG(TreeentryG,TreenodeG *,TreenodeG *,int,TreeentryG *,TreenodeG **);
+
+
+
+
 /*
 SearchTreeG: traverse B-Tree looking for a target (group).
 Assumption
@@ -98,7 +103,7 @@ branch on which to continue search
 
 Boolean SearchNodeG(Key target,TreenodeG *current,int *pos)
 {
-	Boolean bool=FALSE;
+	Boolean bool;
 	if(target<current->entry[1].Id)
 	{
 		/*Take the leftmost branch*/
@@ -172,7 +177,7 @@ Boolean PushdownG(TreeentryG newentry,TreenodeG *current,TreeentryG *medentry,Tr
 			}
 			else
 			{
-				Split(*medentry,*medright,current,pos,medentry,medright);
+				SplitG(*medentry,*medright,current,pos,medentry,medright);
 				bool=FALSE;
 			}
 		}
@@ -197,8 +202,9 @@ void PushInG(TreeentryG medentry,TreenodeG *medright,TreenodeG *current,int pos)
 }
 
 
-void Split(TreeentryG medentry,TreenodeG *medright,TreenodeG *current,int pos,TreeentryG *newmedian,TreenodeG **newright)
+void SplitG(TreeentryG medentry,TreenodeG *medright,TreenodeG *current,int pos,TreeentryG *newmedian,TreenodeG **newright)
 {
+
 	int i;
 	int median;
 	if(pos<=MIN)
@@ -233,10 +239,221 @@ void Split(TreeentryG medentry,TreenodeG *medright,TreenodeG *current,int pos,Tr
 	current->count--;
 }
 
+/*Individual Functions*/
+typedef NodeI TreeentryI;
+
+
+typedef struct treenodeI {
+	int count;/*Except for the root the lower limit is MIN*/
+	TreeentryI entry[MAX + 1];
+	struct treenodeI *branch[MAX +1];
+} TreenodeI;
+
+/*Individual Functions Prototypes*/
+Boolean SearchNodeI(Key,TreenodeI*,int*);
+Boolean PushdownI(TreeentryI newentry,TreenodeI *current,TreeentryI *medentry,TreenodeI **medright);
+void PushInI(TreeentryI medentry,TreenodeI *medright,TreenodeI *current,int pos);
+void SplitI(TreeentryI,TreenodeI *,TreenodeI *,int,TreeentryI *,TreenodeI **);
+
+
+
+
+/*
+SearchTreeI: traverse B-Tree looking for a target (group).
+Assumption
+->The Btree pointed to by root has been created.
+
+What will it do?
+->If the key target is present in the B-tree, 
+then return value points to the node containing target in position targetpos.
+Otherwise, the return value is NULL, and targetpos is undefined.
+
+Components:
+->SearchTreeI recursively
+->SearchNodeI
+
+*/
+
+TreenodeI *SearchTreeI(Key target,TreenodeI *rootI,int *targetpos)
+{
+	TreenodeI *ret_ptr;
+	if(rootI==NULL)
+	{
+		//Empty tree
+		ret_ptr=NULL;
+	}
+	else if(SearchNodeI(target,rootI,targetpos))
+	{
+		
+		//The target is in the root itself
+		ret_ptr=rootI;
+	}
+	else
+	{
+		//Search in the branch
+		ret_ptr=SearchTreeI(target,rootI->branch[*targetpos],targetpos);
+	}
+	return ret_ptr;
+}
+
+/*The above function is tail recursion*/
+
+/***************************************************************************************/
+
+/*
+SearchNode:seraches keys in node for target
+
+Assumptions
+->target is a key and current points to a node of a B-Tree
+
+What will it do?
+->Searches keys in node for target.Returns location pos of targetor 
+branch on which to continue search
+*/
+
+Boolean SearchNodeI(Key target,TreenodeI *current,int *pos)
+{
+	Boolean bool;
+	if(target<current->entry[1].Id)
+	{
+		/*Take the leftmost branch*/
+		*pos=0;
+		bool=FALSE;
+	}
+	else
+	{
+		/*Start a sequential search through keys from end*/
+
+		for(*pos=current->count;(target<current->entry[*pos].Id)&&(*pos>1);(*pos)--);
+
+		if(target==current->entry[*pos].Id)
+		{
+			bool=TRUE;
+		}
+		else
+		{
+			bool=FALSE;
+		}
+	}
+	return bool;
+}
+
+TreenodeI* InsertTreeI(TreeentryI newentry,TreenodeI *rootI)
+{
+	TreeentryI medentry; /*node to be reinserted as new root */
+	TreenodeI *medright; /*subtree on right of medentry */
+	TreenodeI *newroot; /*used when the height of the tree increases */
+	if(PushdownI(newentry,rootI,&medentry,&medright))
+	{
+		/*Tree grows in height */
+	
+		newroot=(TreenodeI*)malloc(sizeof(TreenodeI)); /*Make a new root */
+		newroot->count=1;
+		newroot->entry[1]=medentry;
+		newroot->branch[0]=rootI;
+		newroot->branch[1]=medright;
+		return newroot;
+	}
+	return rootI;
+}
+
+/* PushDownI:recursively belongs in the subtree to which current points*/
+Boolean PushdownI(TreeentryI newentry,TreenodeI *current,TreeentryI *medentry,TreenodeI **medright)
+{
+	Boolean bool;
+	int pos; /*branch on which to continue the search*/
+	if(current==NULL)
+	{
+		/*cannot insert into empty tree;terminates*/
+		*medentry = newentry;
+		*medright=NULL;
+		bool=TRUE;
+	}
+	else
+	{
+		/*Search the current node*/
+		if(SearchNodeI(newentry.Id,current,&pos))
+		{
+			printf("Warning:Inserting duplicate key into B-tree");
+		}
+		if(PushdownI(newentry,current->branch[pos],medentry,medright))
+		{
+
+			if(current->count<MAX)
+			{
+				/*Reinsert median key*/
+				PushInI(*medentry,*medright,current,pos);
+				bool=FALSE;
+			}
+			else
+			{
+				SplitI(*medentry,*medright,current,pos,medentry,medright);
+				bool=FALSE;
+			}
+		}
+		bool=FALSE;
+	}
+	return bool;
+}
+
+void PushInI(TreeentryI medentry,TreenodeI *medright,TreenodeI *current,int pos)
+{
+	/*index to move keys to make room for medentry */
+	int i;
+	for(i=current->count;i>pos;i--)
+	{
+		/*Shift all keys and branches to the right*/
+		current->entry[i+1]=current->entry[i];
+		current->branch[i+1]=current->branch[i];
+	}
+	current->entry[pos+1]=medentry;
+	current->branch[pos+1]=medright;
+	current->count++;
+}
+
+
+void SplitI(TreeentryI medentry,TreenodeI *medright,TreenodeI *current,int pos,TreeentryI *newmedian,TreenodeI **newright)
+{
+
+	int i;
+	int median;
+	if(pos<=MIN)
+	{
+		median=MIN;
+	}
+	else
+	{
+		median=MIN+1;
+	}
+
+	*newright=(TreenodeI*)malloc(sizeof(TreenodeI));
+
+	for(i=median+1;i<=MAX;i++)
+	{
+		(*newright)->entry[i-median]=current->entry[i];
+		(*newright)->branch[i-median]=current->branch[i];
+	}
+
+	(*newright)->count=MAX-median;
+	current->count=median;
+	if(pos<=MIN)
+	{
+		PushInI(medentry,medright,current,pos);
+	}
+	else
+	{
+		PushInI(medentry,medright,*newright,pos-median);
+	}
+	*newmedian=current->entry[current->count];
+	(*newright)->branch[0]=current->branch[current->count];
+	current->count--;
+}
+
 
 void main()
 {
 	TreenodeG *rootG=NULL;
+	TreenodeI *rootI=NULL;
     NodeI nptrI;
     NodeG nptrG;
     unsigned int Member_Id[5];
@@ -249,6 +466,27 @@ void main()
     }
     else
     {
+    	/*Input the Individual Details*/
+        for (int j = 0; j < 20; j++)
+        {
+            fscanf(ptr, "%u", &nptrI.Id);
+            nptrI.reward = 0;
+            // printf("%u",nptrI->Id);
+            fscanf(ptr, "%s", nptrI.Name);
+            // printf("%s",nptrI->Name);
+            fscanf(ptr, "%u", &nptrI.Age);
+            // printf("%u",nptrI->Age);
+            fscanf(ptr, "%u", &nptrI.Daily_Step_Goal);
+            // printf("%u",nptrI->Daily_Step_Goal);
+            for (int i = 0; i < 7; i++)
+            {
+                fscanf(ptr, "%u", &nptrI.Weekly_Step_Count[i]);
+                // printf("%u",nptrI->Weekly_Step_Count[i]);
+            }
+            InsertTreeI(nptrI,rootI);
+        }
+
+        /*Input the Group Details*/
         for (int i = 0; i < 8; i++)
         {
             fscanf(ptr, "%u", &nptrG.Id);
@@ -259,7 +497,7 @@ void main()
             for (int j = 0; j < 5; j++)
             {
                 fscanf(ptr, "%u", &Member_Id[j]);
-               // printf("\n%u",Member_Id[j]);
+                //printf("\n%u",Member_Id[j]);
             }
            // Store_Member_Pointers(nptrG, Member_Id);
 
