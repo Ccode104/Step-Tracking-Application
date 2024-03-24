@@ -1,0 +1,152 @@
+Here's a list of 100 individuals with the specified fields:
+
+```
+1. ID: 1001
+   Name: John Smith
+   Age: 35
+   Daily Step Goal: 10000
+   Weekly Step Count: [8000, 9000, 11000, 10500, 9500, 10000, 12000]
+
+2. ID: 1002
+   Name: Emily Johnson
+   Age: 28
+   Daily Step Goal: 8000
+   Weekly Step Count: [7500, 7800, 8200, 8300, 7900, 8200, 8000]
+
+3. ID: 1003
+   Name: Michael Brown
+   Age: 42
+   Daily Step Goal: 12000
+   Weekly Step Count: [11500, 11800, 12200, 12500, 12300, 12100, 12000]
+
+4. ID: 1004
+   Name: Sarah Wilson
+   Age: 30
+   Daily Step Goal: 9000
+   Weekly Step Count: [8500, 9200, 9100, 9300, 9200, 9400, 9000]
+
+5. ID: 1005
+   Name: David Martinez
+   Age: 45
+   Daily Step Goal: 11000
+   Weekly Step Count: [10800, 11200, 11500, 11000, 11300, 11800, 11600]
+
+6. ID: 1006
+   Name: Jennifer Taylor
+   Age: 38
+   Daily Step Goal: 10000
+   Weekly Step Count: [9800, 10200, 9900, 10100, 9900, 10050, 10200]
+
+7. ID: 1007
+   Name: Christopher Lee
+   Age: 55
+   Daily Step Goal: 8000
+   Weekly Step Count: [7800, 8000, 8200, 8100, 7900, 8300, 8200]
+
+8. ID: 1008
+   Name: Amanda Anderson
+   Age: 33
+   Daily Step Goal: 9500
+   Weekly Step Count: [9300, 9400, 9600, 9700, 9500, 9800, 9400]
+
+9. ID: 1009
+   Name: Daniel Garcia
+   Age: 29
+   Daily Step Goal: 8500
+   Weekly Step Count: [8300, 8600, 8700, 8400, 8700, 8800, 8500]
+
+10. ID: 1010
+    Name: Jessica Hernandez
+    Age: 40
+    Daily Step Goal: 10500
+    Weekly Step Count: [10200, 10600, 10400, 10800, 10300, 11000, 10500]
+
+11. ID: 1011
+    Name: Matthew Nguyen
+    Age: 48
+    Daily Step Goal: 11500
+    Weekly Step Count: [11300, 11600, 11700, 11900, 11500, 11800, 11600]
+
+12. ID: 1012
+    Name: Ashley Kim
+    Age: 31
+    Daily Step Goal: 9000
+    Weekly Step Count: [8800, 9100, 9200, 8900, 9300, 9100, 9000]
+
+13. ID: 1013
+    Name: James Rodriguez
+    Age: 37
+    Daily Step Goal: 10000
+    Weekly Step Count: [9800, 10200, 9900, 10100, 9800, 10200, 10000]
+
+14. ID: 1014
+    Name: Elizabeth Lewis
+    Age: 50
+    Daily Step Goal: 8500
+    Weekly Step Count: [8300, 8600, 8700, 8400, 8500, 8800, 8600]
+
+15. ID: 1015
+    Name: Ryan Hall
+    Age: 26
+    Daily Step Goal: 9500
+    Weekly Step Count: [9300, 9600, 9400, 9700, 9500, 9800, 9600]
+
+16. ID: 1016
+    Name: Lauren Clark
+    Age: 34
+    Daily Step Goal: 10500
+    Weekly Step Count: [10300, 10600, 10400, 10800, 10600, 11000, 10500]
+
+17. ID: 1017
+    Name: Justin Baker
+    Age: 43
+    Daily Step Goal: 11000
+    Weekly Step Count: [10800, 11200, 11400, 11500, 11300, 11600, 11400]
+
+18. ID: 1018
+    Name: Megan Turner
+    Age: 29
+    Daily Step Goal: 9000
+    Weekly Step Count: [8800, 9100, 9200, 9000, 9300, 9100, 9000]
+
+19. ID: 1019
+    Name: Kevin Adams
+    Age: 39
+    Daily Step Goal: 10000
+    Weekly Step Count: [9800, 10200, 10000, 10100, 9900, 10200, 10000]
+
+20. ID: 1020
+    Name: Laura Wright
+    Age: 44
+    Daily Step Goal: 9500
+    Weekly Step Count: [9300, 9600, 9400, 9700, 9600, 9800, 9500]
+
+21. ID: 1021
+    Name: Brian Harris
+    Age: 32
+    Daily Step Goal: 8500
+    Weekly Step Count: [8300, 8600, 8400, 8700, 8500, 8800, 8600]
+
+22. ID: 1022
+    Name: Rachel Scott
+    Age: 51
+    Daily Step Goal: 12000
+    Weekly Step Count: [11500, 11800, 12000, 12200, 11900, 12100, 12000]
+
+23. ID: 1023
+    Name: Eric King
+    Age: 47
+    Daily Step Goal: 11000
+    Weekly Step Count: [10800, 11200, 11000, 11300, 11100, 11500, 11200]
+
+24. ID: 1024
+    Name: Samantha Green
+    Age: 36
+    Daily Step Goal: 10000
+    Weekly Step Count: [9800, 10200, 10000, 10100, 10000, 10300, 10200]
+
+25. ID: 1025
+    Name: Patrick Martinez
+    Age: 41
+    Daily Step Goal: 10500
+    Weekly Step
