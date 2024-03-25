@@ -461,7 +461,7 @@ void MoveRightI(TreenodeI* current,int pos){
 	t->entry[1]=current->entry[pos];
 	t=current->branch[pos-1]; // MOve last key of left node int parent;
 	current->entry[pos]=t->entry[t->count];
-	current->branch[pos]->branch[0]=t->branch[t->count];
+	current->branch[pos]=t->branch[t->count];
 	t->count--;
 }
 void MoveLeftI(TreenodeI* current,int pos){
@@ -924,11 +924,11 @@ void main()
    	    traversal(rootI);
         //printTreeI(rootI,1);
         //printTreeG(rootG,1);
-        //DeleteNodeI(rootI,113);
-        //printf("\nTree after deletion\n");
+        DeleteNodeI(rootI,120);
+        printf("\nTree after deletion\n");
         //printTreeI(rootI,1);
-
-       printf("\n%u",Search_for_Pointer_to_Individual(115,rootI)->Id);
+        traversal(rootI);
+        //printf("\n%u",Search_for_Pointer_to_Individual(115,rootI)->Id);
     }
 
 }
