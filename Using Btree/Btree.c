@@ -180,7 +180,7 @@ Boolean PushdownG(TreeentryG newentry,TreenodeG *current,TreeentryG *medentry,Tr
 			else
 			{
 				SplitG(*medentry,*medright,current,pos,medentry,medright);
-				bool=FALSE;
+				bool=TRUE;
 			}
 		}
 		bool=FALSE;
