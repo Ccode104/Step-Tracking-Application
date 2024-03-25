@@ -1,7 +1,7 @@
 #include<stdio.h>
 #include<stdlib.h>
 
-#define MAX 3 //ORDER of the tree is 5, so number of keys at max is 5-1=4
+#define MAX 4 //ORDER of the tree is 5, so number of keys at max is 5-1=4
 #define MIN 2//Minimum number of keys =(ceil of 5/2) -1 = 2
 
 typedef enum{FAILURE,SUCCESS} status_code;
@@ -56,7 +56,7 @@ Assumption
 ->The Btree pointed to by root has been created.
 
 What will it do?
-->If the key target is present in the B-tree,
+->Gf the key target is present in the B-tree,
 then return value points to the node containing target in position targetpos.
 Otherwise, the return value is NULL, and targetpos is undefined.
 
@@ -85,7 +85,6 @@ TreenodeG *SearchTreeG(Key target,TreenodeG *rootG,int *targetpos)
 		//Search in the branch
 		return SearchTreeG(target,rootG->branch[*targetpos],targetpos);
 	}
-	return ret_ptr;
 }
 
 /*The above function is tail recursion*/
@@ -116,7 +115,7 @@ Boolean SearchNodeG(Key target,TreenodeG *current,int *pos)
 	{
 		/*Start a sequential search through keys from end*/
 
-		for(*pos=current->count;(target<current->entry[*pos].Id)&&(*pos>1);(*pos)--);
+		for(*pos=current->count;(target<current->entry[*pos].Id)&&((*pos)>1);(*pos)--);
 
 		if(target==current->entry[*pos].Id)
 		{
@@ -159,14 +158,14 @@ Boolean PushdownG(TreeentryG newentry,TreenodeG *current,TreeentryG *medentry,Tr
 		/*cannot insert into empty tree;terminates*/
 		*medentry = newentry;
 		*medright=NULL;
-		bool=TRUE;
+		return TRUE;
 	}
 	else
 	{
 		/*Search the current node*/
 		if(SearchNodeG(newentry.Id,current,&pos))
 		{
-			printf("Warning:Inserting duplicate key into B-tree");
+			printf("Warning:Gnserting duplicate key into B-tree");
 		}
 		else if(PushdownG(newentry,current->branch[pos],medentry,medright))
 		{
@@ -175,17 +174,16 @@ Boolean PushdownG(TreeentryG newentry,TreenodeG *current,TreeentryG *medentry,Tr
 			{
 				/*Reinsert median key*/
 				PushInG(*medentry,*medright,current,pos);
-				bool=FALSE;
+				return FALSE;
 			}
 			else
 			{
 				SplitG(*medentry,*medright,current,pos,medentry,medright);
-				bool=TRUE;
+				return TRUE;
 			}
 		}
-		bool=FALSE;
+		return FALSE;
 	}
-	return bool;
 }
 
 void PushInG(TreeentryG medentry,TreenodeG *medright,TreenodeG *current,int pos)
@@ -240,6 +238,7 @@ void SplitG(TreeentryG medentry,TreenodeG *medright,TreenodeG *current,int pos,T
 	(*newright)->branch[0]=current->branch[current->count];
 	current->count--;
 }
+
 
 /*Individual Functions*/
 typedef NodeI TreeentryI;
@@ -814,7 +813,7 @@ void printTreeI(TreenodeI *rootI,int i)
 {
 	if(rootI==NULL)
 	{
-		//printf(" %u ",rootG->entry[i].Id);
+		
 	}
 	else
 	{
@@ -829,7 +828,7 @@ void printTreeI(TreenodeI *rootI,int i)
 	}
 }
 
-void printTreeG(TreenodeI *rootG,int i)
+void printTreeG(TreenodeG *rootG,int i)
 {
 	if(rootG==NULL)
 	{
@@ -845,6 +844,17 @@ void printTreeG(TreenodeI *rootG,int i)
 			printTreeG(rootG->branch[j],1);
 		}
 	}
+}
+
+void traversal(TreenodeI *myNode) {
+  int i;
+  if (myNode) {
+    for (i = 0; i < myNode->count; i++) {
+      traversal(myNode->branch[i]);
+      printf("%d ", myNode->entry[i + 1].Id);
+    }
+    traversal(myNode->branch[i]);
+  }
 }
 
 void main()
@@ -911,12 +921,14 @@ void main()
         fclose(ptr);
    
    	    printf("\nTree before deletion\n");
-        printTreeI(rootI,1);
+   	    traversal(rootI);
+        //printTreeI(rootI,1);
+        //printTreeG(rootG,1);
         //DeleteNodeI(rootI,113);
         //printf("\nTree after deletion\n");
         //printTreeI(rootI,1);
 
-       // printf("\n%u",Search_for_Pointer_to_Individual(113,rootI)->Id);
+       printf("\n%u",Search_for_Pointer_to_Individual(115,rootI)->Id);
     }
 
 }
