@@ -459,8 +459,10 @@ NodeI* Search_for_Pointer_to_Individual(unsigned int Individual_Id,TreenodeI *ro
 	TreenodeI *current;
 	NodeI *loc;
 	current=SearchTreeI(Individual_Id,rootI,&targetpos);
-	if(SearchNodeI(Individual_Id,rootI,&pos))
+	if(current!=NULL)
+	if(SearchNodeI(Individual_Id,current,&pos))
 	{
+		//printf("\n%d",pos);
 		loc=&(current->entry[pos]);
 	}
 	else
@@ -552,9 +554,9 @@ void main()
             {
                 fscanf(ptr, "%u", &Member_Id[j]);
                 printf("\n%u",Member_Id[j]);
-                Search_for_Pointer_to_Individual(Member_Id[j],rootI);
+                //Search_for_Pointer_to_Individual(Member_Id[j],rootI);
             }
-            //Store_Member_Pointers(&nodeG,Member_Id,rootI);
+            Store_Member_Pointers(&nodeG,Member_Id,rootI);
 
             fscanf(ptr, "%u", &nodeG.Weekly_Group_Goal);
             printf("\n%u",nodeG.Weekly_Group_Goal);
@@ -562,7 +564,7 @@ void main()
         }
 
         fclose(ptr);
-        printf("\n%u",rootI->branch[0]->entry[2].Id);
+   
        
     }
 
