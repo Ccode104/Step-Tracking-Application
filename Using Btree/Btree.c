@@ -460,16 +460,36 @@ NodeI* Search_for_Pointer_to_Individual(unsigned int Individual_Id,TreenodeI *ro
 	NodeI *loc;
 	current=SearchTreeI(Individual_Id,rootI,&targetpos);
 	if(current!=NULL)
-	if(SearchNodeI(Individual_Id,current,&pos))
-	{
-		//printf("\n%d",pos);
-		loc=&(current->entry[pos]);
-	}
-	else
-	{
-		printf("The Individual Id does not exists");
-		loc=NULL;
-	}
+		if(SearchNodeI(Individual_Id,current,&pos))
+		{
+			//printf("\n%d",pos);
+			loc=&(current->entry[pos]);
+		}
+		else
+		{
+			printf("The Individual Id does not exists");
+			loc=NULL;
+		}
+	return loc;
+}
+
+NodeG* Search_for_Pointer_to_Group(unsigned int Group_Id,TreenodeG *rootG)
+{
+	int targetpos,pos;
+	TreenodeG *current;
+	NodeG *loc;
+	current=SearchTreeG(Group_Id,rootG,&targetpos);
+	if(current!=NULL)
+		if(SearchNodeG(Group_Id,current,&pos))
+		{
+			//printf("\n%d",pos);
+			loc=&(current->entry[pos]);
+		}
+		else
+		{
+			printf("The Individual Id does not exists");
+			loc=NULL;
+		}
 	return loc;
 }
 
