@@ -325,7 +325,7 @@ Boolean SearchNodeI(Key target,TreenodeI *current,int *pos)
 	{
 		/*Start a sequential search through keys from end*/
 
-		for(*pos=current->count;(target<current->entry[*pos].Id)&&((*pos)>=1);(*pos)--);
+		for(*pos=current->count;(target<current->entry[*pos].Id)&&((*pos)>1);(*pos)--);
 
 		if(target==current->entry[*pos].Id)
 		{
@@ -476,7 +476,7 @@ void MoveLeftI(TreenodeI* current,int pos){
 	current->entry[pos]=t->entry[1];
 	t->branch[0]=t->branch[1];
 	t->count--;
-	for(c=1;c<=t->count;c--){
+	for(c=1;c<=t->count;c++){
 		// Shift all keys in right node one position leftward
 		t->entry[c]=t->entry[c+1];
 		t->branch[c]=t->branch[c+1];
@@ -547,9 +547,9 @@ void RemoveI(TreenodeI* current,int pos){
 }
 void SuccessorI(TreenodeI* currrent,int pos){
 	TreenodeI* leaf;
-	for(leaf=currrent->branch[pos];leaf->branch[0];leaf=leaf->branch[0]){
-		currrent->entry[pos]=leaf->entry[1];
-	}
+	for(leaf=currrent->branch[pos];leaf->branch[0];leaf=leaf->branch[0]);
+	currrent->entry[pos]=leaf->entry[1];
+	
 }
 void RecDeleteNodeI(TreenodeI* current,Key id){
 	int pos;
@@ -563,8 +563,6 @@ void RecDeleteNodeI(TreenodeI* current,Key id){
 			// When deletion not from leaf node so we take successor node of child to parent 
 			SuccessorI(current,pos);
 			RecDeleteNodeI(current->branch[pos],current->entry[pos].Id);
-
-
 		}
 		else{
 			// When the entry is removed from leaf node
@@ -820,9 +818,10 @@ void printTreeI(TreenodeI *rootI,int i)
 	}
 	else
 	{
+		//printf("\ncount=%d",rootI->count);
 		for(int j=i;j<=rootI->count;j++)
 		{
-			//printf("\n");
+			//printf("\nlevel");
 			printTreeI(rootI->branch[j-1],1);
 			printf(" %u ",rootI->entry[j].Id);
 			printTreeI(rootI->branch[j],1);
@@ -871,7 +870,7 @@ void main()
             fscanf(ptr, "%u", &nodeI.Id);
             nodeI.reward = 0;
             nodeI.belong=0;
-            //printf("\n%u",nodeI.Id);
+            printf("\n%u",nodeI.Id);
             fscanf(ptr, "%s", nodeI.Name);
             //printf("\n%s",nodeI.Name);
             fscanf(ptr, "%u", &nodeI.Age);
@@ -913,9 +912,11 @@ void main()
    
    	    printf("\nTree before deletion\n");
         printTreeI(rootI,1);
-        DeleteNodeI(rootI,113);
-        printf("\nTree after deletion\n");
-        printTreeI(rootI,1);
+        //DeleteNodeI(rootI,113);
+        //printf("\nTree after deletion\n");
+        //printTreeI(rootI,1);
+
+       // printf("\n%u",Search_for_Pointer_to_Individual(113,rootI)->Id);
     }
 
 }
