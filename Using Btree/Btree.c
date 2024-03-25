@@ -880,7 +880,7 @@ void main()
             fscanf(ptr, "%u", &nodeI.Id);
             nodeI.reward = 0;
             nodeI.belong=0;
-            printf("\n%u",nodeI.Id);
+            //printf("\n%u",nodeI.Id);
             fscanf(ptr, "%s", nodeI.Name);
             //printf("\n%s",nodeI.Name);
             fscanf(ptr, "%u", &nodeI.Age);
