@@ -1,9 +1,10 @@
 #include<stdio.h>
 #include<stdlib.h>
 
-#define MAX 4 //ORDER of the tree is 5, so number of keys at max is 5-1=4
+#define MAX 3 //ORDER of the tree is 5, so number of keys at max is 5-1=4
 #define MIN 2//Minimum number of keys =(ceil of 5/2) -1 = 2
 
+typedef enum{FAILURE,SUCCESS} status_code;
 typedef enum{NO,YES} belongs;
 typedef enum{FALSE,TRUE} Boolean;
 
@@ -39,11 +40,12 @@ typedef struct treenodeG {
 	struct treenodeG *branch[MAX +1];
 } TreenodeG;
 
-/*Group Functions*/
+/*Group Functions Prototypes*/
 Boolean SearchNodeG(Key,TreenodeG*,int*);
 Boolean PushdownG(TreeentryG newentry,TreenodeG *current,TreeentryG *medentry,TreenodeG **medright);
 void PushInG(TreeentryG medentry,TreenodeG *medright,TreenodeG *current,int pos);
 void SplitG(TreeentryG,TreenodeG *,TreenodeG *,int,TreeentryG *,TreenodeG **);
+
 
 
 
@@ -54,7 +56,7 @@ Assumption
 ->The Btree pointed to by root has been created.
 
 What will it do?
-->If the key target is present in the B-tree, 
+->If the key target is present in the B-tree,
 then return value points to the node containing target in position targetpos.
 Otherwise, the return value is NULL, and targetpos is undefined.
 
@@ -70,18 +72,18 @@ TreenodeG *SearchTreeG(Key target,TreenodeG *rootG,int *targetpos)
 	if(rootG==NULL)
 	{
 		//Empty tree
-		ret_ptr=NULL;
+		return NULL;
 	}
 	else if(SearchNodeG(target,rootG,targetpos))
 	{
-		
+
 		//The target is in the root itself
-		ret_ptr=rootG;
+		return rootG;
 	}
 	else
 	{
 		//Search in the branch
-		ret_ptr=SearchTreeG(target,rootG->branch[*targetpos],targetpos);
+		return SearchTreeG(target,rootG->branch[*targetpos],targetpos);
 	}
 	return ret_ptr;
 }
@@ -97,7 +99,7 @@ Assumptions
 ->target is a key and current points to a node of a B-Tree
 
 What will it do?
-->Searches keys in node for target.Returns location pos of targetor 
+->Searches keys in node for target.Returns location pos of targetor
 branch on which to continue search
 */
 
@@ -136,7 +138,7 @@ TreenodeG* InsertTreeG(TreeentryG newentry,TreenodeG *rootG)
 	if(PushdownG(newentry,rootG,&medentry,&medright))
 	{
 		/*Tree grows in height */
-	
+
 		newroot=(TreenodeG*)malloc(sizeof(TreenodeG)); /*Make a new root */
 		newroot->count=1;
 		newroot->entry[1]=medentry;
@@ -166,7 +168,7 @@ Boolean PushdownG(TreeentryG newentry,TreenodeG *current,TreeentryG *medentry,Tr
 		{
 			printf("Warning:Inserting duplicate key into B-tree");
 		}
-		if(PushdownG(newentry,current->branch[pos],medentry,medright))
+		else if(PushdownG(newentry,current->branch[pos],medentry,medright))
 		{
 
 			if(current->count<MAX)
@@ -264,7 +266,7 @@ Assumption
 ->The Btree pointed to by root has been created.
 
 What will it do?
-->If the key target is present in the B-tree, 
+->If the key target is present in the B-tree,
 then return value points to the node containing target in position targetpos.
 Otherwise, the return value is NULL, and targetpos is undefined.
 
@@ -280,20 +282,19 @@ TreenodeI *SearchTreeI(Key target,TreenodeI *rootI,int *targetpos)
 	if(rootI==NULL)
 	{
 		//Empty tree
-		ret_ptr=NULL;
+		return NULL;
 	}
 	else if(SearchNodeI(target,rootI,targetpos))
 	{
-		
+
 		//The target is in the root itself
-		ret_ptr=rootI;
+		return rootI;
 	}
 	else
 	{
 		//Search in the branch
-		ret_ptr=SearchTreeI(target,rootI->branch[*targetpos],targetpos);
+		return SearchTreeI(target,rootI->branch[*targetpos],targetpos);
 	}
-	return ret_ptr;
 }
 
 /*The above function is tail recursion*/
@@ -307,7 +308,7 @@ Assumptions
 ->target is a key and current points to a node of a B-Tree
 
 What will it do?
-->Searches keys in node for target.Returns location pos of targetor 
+->Searches keys in node for target.Returns location pos of targetor
 branch on which to continue search
 */
 
@@ -324,7 +325,7 @@ Boolean SearchNodeI(Key target,TreenodeI *current,int *pos)
 	{
 		/*Start a sequential search through keys from end*/
 
-		for(*pos=current->count;(target<current->entry[*pos].Id)&&(*pos>1);(*pos)--);
+		for(*pos=current->count;(target<current->entry[*pos].Id)&&((*pos)>=1);(*pos)--);
 
 		if(target==current->entry[*pos].Id)
 		{
@@ -346,7 +347,7 @@ TreenodeI* InsertTreeI(TreeentryI newentry,TreenodeI *rootI)
 	if(PushdownI(newentry,rootI,&medentry,&medright))
 	{
 		/*Tree grows in height */
-	
+
 		newroot=(TreenodeI*)malloc(sizeof(TreenodeI)); /*Make a new root */
 		newroot->count=1;
 		newroot->entry[1]=medentry;
@@ -367,7 +368,7 @@ Boolean PushdownI(TreeentryI newentry,TreenodeI *current,TreeentryI *medentry,Tr
 		/*cannot insert into empty tree;terminates*/
 		*medentry = newentry;
 		*medright=NULL;
-		bool=TRUE;
+		return TRUE;
 	}
 	else
 	{
@@ -376,24 +377,23 @@ Boolean PushdownI(TreeentryI newentry,TreenodeI *current,TreeentryI *medentry,Tr
 		{
 			printf("Warning:Inserting duplicate key into B-tree");
 		}
-		if(PushdownI(newentry,current->branch[pos],medentry,medright))
+		else if(PushdownI(newentry,current->branch[pos],medentry,medright))
 		{
 
 			if(current->count<MAX)
 			{
 				/*Reinsert median key*/
 				PushInI(*medentry,*medright,current,pos);
-				bool=FALSE;
+				return FALSE;
 			}
 			else
 			{
 				SplitI(*medentry,*medright,current,pos,medentry,medright);
-				bool=FALSE;
+				return TRUE;
 			}
 		}
-		bool=FALSE;
+		return FALSE;
 	}
-	return bool;
 }
 
 void PushInI(TreeentryI medentry,TreenodeI *medright,TreenodeI *current,int pos)
@@ -448,14 +448,64 @@ void SplitI(TreeentryI medentry,TreenodeI *medright,TreenodeI *current,int pos,T
 	(*newright)->branch[0]=current->branch[current->count];
 	current->count--;
 }
+TreenodeG* Create_Group(NodeG *nptr,TreenodeG *root)
+{
+	root=InsertTreeG(*nptr,root);
+	return root;
+}
+NodeI* Search_for_Pointer_to_Individual(unsigned int Individual_Id,TreenodeI *rootI)
+{
+	int targetpos,pos;
+	TreenodeI *current;
+	NodeI *loc;
+	current=SearchTreeI(Individual_Id,rootI,&targetpos);
+	if(SearchNodeI(Individual_Id,rootI,&pos))
+	{
+		loc=&(current->entry[pos]);
+	}
+	else
+	{
+		printf("The Individual Id does not exists");
+		loc=NULL;
+	}
+	return loc;
+}
+
+status_code Store_Member_Pointers(NodeG *nptr, unsigned int Member_Id[],TreenodeI *rootI)
+{
+    status_code sc = SUCCESS;
+
+    for (int i = 0; i < 5; i++)
+    {
+        if ((Member_Id[i] != 0))
+        {
+            nptr->Members[i] = Search_for_Pointer_to_Individual(Member_Id[i],rootI);
+            if (nptr->Members[i]->belong == 1)
+            {
+                nptr->Members[i] = NULL;
+            }
+            else
+            {
+                nptr->Members[i]->belong = 1;
+            }
+        }
+        else
+        {
+            // printf("NULL");
+            nptr->Members[i] = NULL;
+        }
+    }
+
+    return sc;
+}
 
 
 void main()
 {
 	TreenodeG *rootG=NULL;
 	TreenodeI *rootI=NULL;
-    NodeI nptrI;
-    NodeG nptrG;
+    NodeI nodeI;
+    NodeG nodeG;
     unsigned int Member_Id[5];
 
     // Input the details
@@ -466,48 +516,54 @@ void main()
     }
     else
     {
+
     	/*Input the Individual Details*/
         for (int j = 0; j < 20; j++)
         {
-            fscanf(ptr, "%u", &nptrI.Id);
-            nptrI.reward = 0;
-            // printf("%u",nptrI->Id);
-            fscanf(ptr, "%s", nptrI.Name);
-            // printf("%s",nptrI->Name);
-            fscanf(ptr, "%u", &nptrI.Age);
-            // printf("%u",nptrI->Age);
-            fscanf(ptr, "%u", &nptrI.Daily_Step_Goal);
-            // printf("%u",nptrI->Daily_Step_Goal);
+            fscanf(ptr, "%u", &nodeI.Id);
+            nodeI.reward = 0;
+            nodeI.belong=0;
+            printf("\n%u",nodeI.Id);
+            fscanf(ptr, "%s", nodeI.Name);
+            printf("\n%s",nodeI.Name);
+            fscanf(ptr, "%u", &nodeI.Age);
+            printf("\n%u",nodeI.Age);
+            fscanf(ptr, "%u", &nodeI.Daily_Step_Goal);
+            printf("\n%u",nodeI.Daily_Step_Goal);
             for (int i = 0; i < 7; i++)
             {
-                fscanf(ptr, "%u", &nptrI.Weekly_Step_Count[i]);
-                // printf("%u",nptrI->Weekly_Step_Count[i]);
+                fscanf(ptr, "%u", &nodeI.Weekly_Step_Count[i]);
+                printf("%u ",nodeI.Weekly_Step_Count[i]);
             }
-            InsertTreeI(nptrI,rootI);
+            rootI=InsertTreeI(nodeI,rootI);
+            nodeI.Id=0;
         }
 
-        /*Input the Group Details*/
-        for (int i = 0; i < 8; i++)
+
+        //Input the Group Details
+        for (int i = 0; i < 5; i++)
         {
-            fscanf(ptr, "%u", &nptrG.Id);
-            //printf("\n%u",nptrG.Id);
-            fscanf(ptr, "%s", nptrG.Name);
-            //printf("\n%s",nptrG.Name);
+            fscanf(ptr, "%u", &nodeG.Id);
+            printf("\n%u",nodeG.Id);
+            fscanf(ptr, "%s", nodeG.Name);
+            printf("\n%s",nodeG.Name);
 
             for (int j = 0; j < 5; j++)
             {
                 fscanf(ptr, "%u", &Member_Id[j]);
-                //printf("\n%u",Member_Id[j]);
+                printf("\n%u",Member_Id[j]);
+                Search_for_Pointer_to_Individual(Member_Id[j],rootI);
             }
-           // Store_Member_Pointers(nptrG, Member_Id);
+            //Store_Member_Pointers(&nodeG,Member_Id,rootI);
 
-            fscanf(ptr, "%u", &nptrG.Weekly_Group_Goal);
-            //printf("\n%u",nptrG.Weekly_Group_Goal);
-            rootG=InsertTreeG(nptrG,rootG);
+            fscanf(ptr, "%u", &nodeG.Weekly_Group_Goal);
+            printf("\n%u",nodeG.Weekly_Group_Goal);
+            rootG=InsertTreeG(nodeG,rootG);
         }
 
         fclose(ptr);
-
+        printf("\n%u",rootI->branch[0]->entry[2].Id);
+       
     }
 
 }
