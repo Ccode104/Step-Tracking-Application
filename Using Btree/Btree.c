@@ -448,6 +448,297 @@ void SplitI(TreeentryI medentry,TreenodeI *medright,TreenodeI *current,int pos,T
 	(*newright)->branch[0]=current->branch[current->count];
 	current->count--;
 }
+
+void MoveRightI(TreenodeI* current,int pos){
+	int c;
+	TreenodeI* t;
+	t=current->branch[pos];
+	for(c=t->count;c>0;c--){
+		t->entry[c+1]=t->entry[c];
+		t->branch[c+1]=t->branch[c];
+	}
+	t->branch[1]=t->branch[0] ; // Move key from parent to rightnode;
+	t->count++;
+	t->entry[1]=current->entry[pos];
+	t=current->branch[pos-1]; // MOve last key of left node int parent;
+	current->entry[pos]=t->entry[t->count];
+	current->branch[pos]->branch[0]=t->branch[t->count];
+	t->count--;
+}
+void MoveLeftI(TreenodeI* current,int pos){
+	int c;
+	TreenodeI* t;
+	t=current->branch[pos-1];  // Move key from parent to left node
+	t->count++;
+	t->entry[t->count]=current->entry[pos];
+	t->branch[t->count]=current->branch[pos]->branch[0];
+	t=current->branch[pos];
+	current->entry[pos]=t->entry[1];
+	t->branch[0]=t->branch[1];
+	t->count--;
+	for(c=1;c<=t->count;c--){
+		// Shift all keys in right node one position leftward
+		t->entry[c]=t->entry[c+1];
+		t->branch[c]=t->branch[c+1];
+	}
+
+}
+void combineI(TreenodeI* current,int pos){
+	int c;
+	TreenodeI* right,*left;
+	right=current->branch[pos];
+	left=current->branch[pos-1]; // Work with left node
+	left->count++; // INsert the key from the parent;
+	left->entry[left->count]=current->entry[pos];
+	left->branch[left->count]=right->branch[0];
+	for(c=1;c<=right->count;c++){
+		left->count++;
+		left->entry[left->count]=right->entry[c];
+		left->branch[left->count]=right->branch[c];
+	}
+	for(c=pos;c<current->count;c++){
+		// Deleting key from parent node and shifting others 
+		current->entry[c]=current->entry[c+1];
+		current->branch[c]=current->branch[c+1];
+	}
+	current->count--;
+	free(right);
+
+}
+void RestoreI(TreenodeI* current,int pos){
+	if(pos==0){
+		// Leftmost key
+		if(current->branch[1]->count>MIN){
+			MoveLeftI(current,1);
+		}
+		else{
+			combineI(current,1);
+		}
+	}
+	else if(pos==current->count){
+		// rightmost key;
+	    if(current->branch[pos-1]->count>MIN){
+			MoveRightI(current,pos);
+
+		}
+		else{
+			combineI(current,pos);
+		}
+	}
+	else if(current->branch[pos-1]->count>MIN){
+		MoveRightI(current,pos);
+	}
+	else if(current->branch[pos+1]->count>MIN)
+	{
+		MoveLeftI(current,pos+1);
+	}
+	else{
+		combineI(current,pos);
+	}
+}
+void RemoveI(TreenodeI* current,int pos){
+	int i;
+	for(i=pos+1;i<=current->count;i++){
+		current->entry[i-1]=current->entry[i];
+		current->branch[i-1]=current->branch[i];
+
+	}
+	current->count--;
+}
+void SuccessorI(TreenodeI* currrent,int pos){
+	TreenodeI* leaf;
+	for(leaf=currrent->branch[pos];leaf->branch[0];leaf=leaf->branch[0]){
+		currrent->entry[pos]=leaf->entry[1];
+	}
+}
+void RecDeleteNodeI(TreenodeI* current,Key id){
+	int pos;
+	if(current==NULL){
+		printf("Id not found!!\n");
+		return ;
+	}
+	if(SearchNodeI(id,current,&pos)){
+		// Target is founfd in the current nodeI
+		if(current->branch[pos-1]){
+			// When deletion not from leaf node so we take successor node of child to parent 
+			SuccessorI(current,pos);
+			RecDeleteNodeI(current->branch[pos],current->entry[pos].Id);
+
+
+		}
+		else{
+			// When the entry is removed from leaf node
+			RemoveI(current,pos);
+
+		}
+	}
+	else{
+		RecDeleteNodeI(current->branch[pos],id);
+		if(current->branch[pos]){
+			if(current->branch[pos]->count<MIN){
+				RestoreI(current,pos);
+
+			}
+		}
+	}
+}
+TreenodeI* DeleteNodeI(TreenodeI* root,Key id){
+	TreenodeI* oldroot;
+	RecDeleteNodeI(root,id);
+	if(root->count==0){
+		oldroot=root;
+		root=root->branch[0];
+		free(oldroot);
+	}
+	return root;
+
+}
+
+void MoveRightG(TreenodeG* current,int pos){
+	int c;
+	TreenodeG* t;
+	t=current->branch[pos];
+	for(c=t->count;c>0;c--){
+		t->entry[c+1]=t->entry[c];
+		t->branch[c+1]=t->branch[c];
+	}
+	t->branch[1]=t->branch[0] ; // Move key from parent to rightnode;
+	t->count++;
+	t->entry[1]=current->entry[pos];
+	t=current->branch[pos-1]; // MOve last key of left node int parent;
+	current->entry[pos]=t->entry[t->count];
+	current->branch[pos]->branch[0]=t->branch[t->count];
+	t->count--;
+}
+void MoveLeftG(TreenodeG* current,int pos){
+	int c;
+	TreenodeG* t;
+	t=current->branch[pos-1];  // Move key from parent to left node
+	t->count++;
+	t->entry[t->count]=current->entry[pos];
+	t->branch[t->count]=current->branch[pos]->branch[0];
+	t=current->branch[pos];
+	current->entry[pos]=t->entry[1];
+	t->branch[0]=t->branch[1];
+	t->count--;
+	for(c=1;c<=t->count;c--){
+		// Shift all keys in right node one position leftward
+		t->entry[c]=t->entry[c+1];
+		t->branch[c]=t->branch[c+1];
+	}
+
+}
+void combineG(TreenodeG* current,int pos){
+	int c;
+	TreenodeG* right,*left;
+	right=current->branch[pos];
+	left=current->branch[pos-1]; // Work with left node
+	left->count++; // GNsert the key from the parent;
+	left->entry[left->count]=current->entry[pos];
+	left->branch[left->count]=right->branch[0];
+	for(c=1;c<=right->count;c++){
+		left->count++;
+		left->entry[left->count]=right->entry[c];
+		left->branch[left->count]=right->branch[c];
+	}
+	for(c=pos;c<current->count;c++){
+		// Deleting key from parent node and shifting others 
+		current->entry[c]=current->entry[c+1];
+		current->branch[c]=current->branch[c+1];
+	}
+	current->count--;
+	free(right);
+
+}
+void RestoreG(TreenodeG* current,int pos){
+	if(pos==0){
+		// Leftmost key
+		if(current->branch[1]->count>MIN){
+			MoveLeftG(current,1);
+		}
+		else{
+			combineG(current,1);
+		}
+	}
+	else if(pos==current->count){
+		// rightmost key;
+	    if(current->branch[pos-1]->count>MIN){
+			MoveRightG(current,pos);
+
+		}
+		else{
+			combineG(current,pos);
+		}
+	}
+	else if(current->branch[pos-1]->count>MIN){
+		MoveRightG(current,pos);
+	}
+	else if(current->branch[pos+1]->count>MIN)
+	{
+		MoveLeftG(current,pos+1);
+	}
+	else{
+		combineG(current,pos);
+	}
+}
+void RemoveG(TreenodeG* current,int pos){
+	int i;
+	for(i=pos+1;i<=current->count;i++){
+		current->entry[i-1]=current->entry[i];
+		current->branch[i-1]=current->branch[i];
+
+	}
+	current->count--;
+}
+void SuccessorG(TreenodeG* currrent,int pos){
+	TreenodeG* leaf;
+	for(leaf=currrent->branch[pos];leaf->branch[0];leaf=leaf->branch[0]){
+		currrent->entry[pos]=leaf->entry[1];
+	}
+}
+void RecDeleteNodeG(TreenodeG* current,Key id){
+	int pos;
+	if(current==NULL){
+		printf("Id not found!!\n");
+		return ;
+	}
+	if(SearchNodeG(id,current,&pos)){
+		// Target is found in the current nodeG
+		if(current->branch[pos-1]){
+			// When deletion not from leaf node so we take successor node of child to parent 
+			SuccessorG(current,pos);
+			RecDeleteNodeG(current->branch[pos],current->entry[pos].Id);
+
+
+		}
+		else{
+			// When the entry is removed from leaf node
+			RemoveG(current,pos);
+
+		}
+	}
+	else{
+		RecDeleteNodeG(current->branch[pos],id);
+		if(current->branch[pos]){
+			if(current->branch[pos]->count<MIN){
+				RestoreG(current,pos);
+
+			}
+		}
+	}
+}
+TreenodeG* DeleteNodeG(TreenodeG* root,Key id){
+	TreenodeG* oldroot;
+	RecDeleteNodeG(root,id);
+	if(root->count==0){
+		oldroot=root;
+		root=root->branch[0];
+		free(oldroot);
+	}
+	return root;
+
+}
+
 TreenodeG* Create_Group(NodeG *nptr,TreenodeG *root)
 {
 	root=InsertTreeG(*nptr,root);
@@ -521,6 +812,41 @@ status_code Store_Member_Pointers(NodeG *nptr, unsigned int Member_Id[],Treenode
     return sc;
 }
 
+void printTreeI(TreenodeI *rootI,int i)
+{
+	if(rootI==NULL)
+	{
+		//printf(" %u ",rootG->entry[i].Id);
+	}
+	else
+	{
+		for(int j=i;j<=rootI->count;j++)
+		{
+			//printf("\n");
+			printTreeI(rootI->branch[j-1],1);
+			printf(" %u ",rootI->entry[j].Id);
+			printTreeI(rootI->branch[j],1);
+		}
+	}
+}
+
+void printTreeG(TreenodeI *rootG,int i)
+{
+	if(rootG==NULL)
+	{
+		//printf(" %u ",rootG->entry[i].Id);
+	}
+	else
+	{
+		for(int j=i;j<=rootG->count;j++)
+		{
+			//printf("\n");
+			printTreeG(rootG->branch[j-1],1);
+			printf(" %u ",rootG->entry[j].Id);
+			printTreeG(rootG->branch[j],1);
+		}
+	}
+}
 
 void main()
 {
@@ -545,17 +871,17 @@ void main()
             fscanf(ptr, "%u", &nodeI.Id);
             nodeI.reward = 0;
             nodeI.belong=0;
-            printf("\n%u",nodeI.Id);
+            //printf("\n%u",nodeI.Id);
             fscanf(ptr, "%s", nodeI.Name);
-            printf("\n%s",nodeI.Name);
+            //printf("\n%s",nodeI.Name);
             fscanf(ptr, "%u", &nodeI.Age);
-            printf("\n%u",nodeI.Age);
+            //printf("\n%u",nodeI.Age);
             fscanf(ptr, "%u", &nodeI.Daily_Step_Goal);
-            printf("\n%u",nodeI.Daily_Step_Goal);
+            //printf("\n%u",nodeI.Daily_Step_Goal);
             for (int i = 0; i < 7; i++)
             {
                 fscanf(ptr, "%u", &nodeI.Weekly_Step_Count[i]);
-                printf("%u ",nodeI.Weekly_Step_Count[i]);
+                //printf("%u ",nodeI.Weekly_Step_Count[i]);
             }
             rootI=InsertTreeI(nodeI,rootI);
             nodeI.Id=0;
@@ -566,26 +892,30 @@ void main()
         for (int i = 0; i < 5; i++)
         {
             fscanf(ptr, "%u", &nodeG.Id);
-            printf("\n%u",nodeG.Id);
+            //printf("\n%u",nodeG.Id);
             fscanf(ptr, "%s", nodeG.Name);
-            printf("\n%s",nodeG.Name);
+            //printf("\n%s",nodeG.Name);
 
             for (int j = 0; j < 5; j++)
             {
                 fscanf(ptr, "%u", &Member_Id[j]);
-                printf("\n%u",Member_Id[j]);
+                //printf("\n%u",Member_Id[j]);
                 //Search_for_Pointer_to_Individual(Member_Id[j],rootI);
             }
             Store_Member_Pointers(&nodeG,Member_Id,rootI);
 
             fscanf(ptr, "%u", &nodeG.Weekly_Group_Goal);
-            printf("\n%u",nodeG.Weekly_Group_Goal);
+            //printf("\n%u",nodeG.Weekly_Group_Goal);
             rootG=InsertTreeG(nodeG,rootG);
         }
 
         fclose(ptr);
    
-       
+   	    printf("\nTree before deletion\n");
+        printTreeI(rootI,1);
+        DeleteNodeI(rootI,113);
+        printf("\nTree after deletion\n");
+        printTreeI(rootI,1);
     }
 
 }
