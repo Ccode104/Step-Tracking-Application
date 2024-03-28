@@ -1767,6 +1767,21 @@ void main()
 
         while (value != -1)
         {
+        	printf("\nMenu\n");
+            printf("1 Add Person\n");
+            printf("2 Create Group\n");
+            printf("3 Get top 3 Individuals\n");
+            printf("4 Check Group Achievement\n");
+            printf("5 Generate Leader Board\n");
+            printf("6 Check Individual Rewards\n");
+            printf("7 Delete Individual\n");
+            printf("8 Delete Group\n");
+            printf("9 Merge Groups\n");
+            printf("10 Display Group Info\n");
+            printf("11 Suggest Goal Updates\n\n");
+            printf("\nEnter the number of the function: ");
+            scanf("%d", &value);
+            
             printf("\nEnter the number of the function: ");
             scanf("%d", &value);
             if (value == 1)
