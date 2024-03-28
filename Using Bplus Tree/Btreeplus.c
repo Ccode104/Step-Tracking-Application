@@ -339,15 +339,46 @@ void split_tree_node(Bptree_NodeG **curr_ptr,Bptree_NodeG *parent,int k)
 	{
 		//leaf node split
 
-		if(parent!=NULL)&&(parent->key[k]>curr->u.data_ptr[2])
+		if(parent==NULL)&&(curr->key[2]>curr->u.data_ptr[2])
 		{
-			//key to be inserted on right(i+1)
-			if(k==0)
-			{
-				Insert_at_start(curr,curr->u.data_ptr[])
-			}
-			//shift
-			//create new data node at (i+1)
+			//key to be pushed up is 1st
+			Bptree_NodeG *nptr=Create_Bptree_NodeG();
+			Bptree_NodeG *right=Create_Bptree_NodeG();
+
+			nptr->key[0]=curr->u.data_ptr[2].Id;
+			curr->u.data_ptr[2].Id=-1;
+			nptr->u.data_ptr[1]=Create_Data_NodeG();
+			nptr->u.data_ptr[1]->val[0]=curr->u.data_ptr[2]->val[2];
+
+			nptr->key[1]=curr->u.data_ptr[3].Id;
+			curr->u.data_ptr[3].Id=-1;
+			nptr->u.data_ptr[2]=Create_Data_NodeG();
+			nptr->u.data_ptr[2]->val[0]=curr->u.data_ptr[2]->val[3];
+
+			right->key[0]=curr->key[2];
+			curr->key[2]=-1;
+			right->key[1]=curr->key[3];
+			curr->key[3]=-1;
+		}
+		else if(parent==NULL)&&(curr->key[2]<=curr->u.data_ptr[2])
+		{
+			//key to be pushed up is 2nd
+			Bptree_NodeG *nptr=Create_Bptree_NodeG();
+			Bptree_NodeG *right=Create_Bptree_NodeG();
+
+			nptr->key[0]=curr->u.data_ptr[2].Id;
+			curr->u.data_ptr[2].Id=-1;
+			
+			
+			nptr->key[1]=curr->u.data_ptr[3].Id;
+			curr->u.data_ptr[3].Id=-1;
+			nptr->u.data_ptr[2]=Create_Data_NodeG();
+			nptr->u.data_ptr[2]->val[0]=curr->u.data_ptr[2]->val[3];
+
+			right->key[0]=curr->key[2];
+			curr->key[2]=-1;
+			right->key[1]=curr->key[3];
+			curr->key[3]=-1;
 		}
 	}
 }
