@@ -62,6 +62,9 @@ typedef struct treenodeS {
 	struct treenodeS *branch[MAX +1];
 } TreenodeS;
 
+NodeI *position[3];
+unsigned int first,second,third;
+
 /*Store the Member pointer in the Group*/
 status_code Store_Member_Pointers(NodeG*,unsigned int*,TreenodeI*);
 
@@ -89,7 +92,7 @@ NodeG* CreateNodeG();
 status_code Add_Person(NodeI*);
 
 /*Create a Group*/
-TreenodeG* Create_Group(NodeG*,TreenodeG*);
+TreenodeG* Create_Group(NodeG*,TreenodeG*,status_code*);
 
 /*Delete a Group*/
 TreenodeG* Delete_Group(unsigned int,TreenodeG*);
@@ -1085,9 +1088,13 @@ void RestoreS(TreenodeS* current,int pos){
 	}
 }
 
-TreenodeG* Create_Group(NodeG *nptr,TreenodeG *root)
+TreenodeG* Create_Group(NodeG *nptr,TreenodeG *root,status_code* sc)
 {
-	root=InsertTreeG(*nptr,root);
+	*sc=SUCCESS;
+	if(nptr==NULL)
+		*sc=FAILURE;
+	else
+		root=InsertTreeG(*nptr,root);
 	return root;
 }
 NodeI* Search_for_Pointer_to_Individual(unsigned int Individual_Id,TreenodeI *rootI)
@@ -1351,9 +1358,10 @@ TreenodeG* Merge_Groups(unsigned int Group_Id_1, unsigned int Group_Id_2,Treenod
             scanf("%u", &newgoals);
             newgroup->Weekly_Group_Goal = newgoals;
             // Now the group has been sucessfully formed now delete the old groups and place the new group further
+            status_code sc;
             rootG=Delete_Group(Group_Id_1,rootG);
             rootG=Delete_Group(Group_Id_2,rootG);
-            Create_Group(newgroup,rootG);
+            Create_Group(newgroup,rootG,&sc);
         }
     }
     return rootG;
@@ -1455,6 +1463,239 @@ void Display_group_range_info(TreenodeG *rootG,int lower,int upper)
 	printf("\n----------------------------------------------------\n");
 	traversalG(rootG,lower,upper);
 }
+
+status_code Display_Member_Info(NodeI *ptr)
+{
+    status_code sc = SUCCESS;
+
+    if (ptr == NULL)
+    {
+        sc = FAILURE;
+    }
+    else
+    {
+
+        printf("\nMember Id : %u ", ptr->Id);
+        printf("\nMember Name : %s ", ptr->Name);
+        printf("\nMember Age : %u ", ptr->Age);
+    }
+
+    // printf("\n.........................................................\n");
+    return sc;
+}
+
+void display_individualDatacompletely(TreenodeI* myNode){
+    int i;
+    if (myNode)
+    {
+        for (i = 0; i < myNode->count; i++)
+        {
+            display_individualDatacompletely(myNode->branch[i]);
+            //printf("%d ", myNode->entry[i + 1].Id);
+            Display_Member_Info(&(myNode->entry[i+1]));
+        }
+        display_individualDatacompletely(myNode->branch[i]);
+    }
+}
+
+Boolean target_complete(NodeI *curr, unsigned int *steps)
+{
+    Boolean res = TRUE;
+    for (int i = 0; i < 7 && res == TRUE; i++)
+    {
+        *steps += curr->Weekly_Step_Count[i];
+        if (curr->Daily_Step_Goal > curr->Weekly_Step_Count[i])
+        {
+            // The target is incomplete
+            res = FALSE;
+        }
+    }
+    return res;
+}
+
+void gettop3list(TreenodeI *rootI)
+{
+    int i;
+    if (rootI)
+    {
+        for (i = 0; i < rootI->count; i++)
+        {
+            gettop3list(rootI->branch[i]);
+            int steps = 0;
+            Boolean check = target_complete(&(rootI->entry[i+1]),&steps);
+            if (check == TRUE)
+            {
+                // Target is completed;
+
+                // The member has completed therir daily step goals
+
+                if (position[0] == NULL)
+                {
+                    position[0] = &(rootI->entry[i+1]);
+
+                    first = steps;
+                }
+                else if (position[1] == NULL)
+                {
+                    if (steps > first)
+                    {
+                        // The current one has more number of steps
+                        position[1] = position[0];
+                        position[0] = &(rootI->entry[i+1]);
+                        second = first;
+                        first = steps;
+                    }
+                    else
+                    {
+                        position[1] = &(rootI->entry[i+1]);
+                        second = steps;
+                    }
+                }
+                else if (position[2] == NULL)
+                {
+                    if (steps > first)
+                    {
+                        position[2] = position[1];
+                        position[1] = position[0];
+                        position[0] = &(rootI->entry[i+1]);
+                        third = second;
+                        second = first;
+                        first = steps;
+                    }
+                    else if (steps > second)
+                    {
+                        position[2] = position[1];
+                        position[1] = &(rootI->entry[i+1]);
+                        third = second;
+                        second = steps;
+                    }
+                    else
+                    {
+                        position[2] = &(rootI->entry[i+1]);
+                        third = steps;
+                    }
+                }
+                else
+                {
+                    if (steps > first)
+                    {
+                        position[2] = position[1];
+                        position[1] = position[0];
+                        position[0] = &(rootI->entry[i+1]);
+                        third = second;
+                        second = first;
+                        first = steps;
+                    }
+                    else if (steps > second)
+                    {
+                        position[2] = position[1];
+                        position[1] = &(rootI->entry[i+1]);
+                        third = second;
+                        second = steps;
+                    }
+                    else if (steps > third)
+                    {
+                        position[2] = &(rootI->entry[i+1]);
+                        third = steps;
+                    }
+                    // If it don't eneter into any of the condition then this means that the member_steps < third;
+                }
+            }
+        }
+        gettop3list(rootI->branch[i]);
+    }
+}
+status_code get_Top3(TreenodeI* rootI){
+    printf("\n");
+    gettop3list(rootI);
+    status_code sc = SUCCESS;
+
+    // if flag==1 then perform this printing statements else dont perform
+    for (int i = 0; i < 3; i++)
+    {
+        if (position[i] == NULL)
+        {
+            sc = FAILURE;
+        }
+        else
+        {
+
+            printf("\n\nRank No. ---->>> %d", i + 1);
+            Display_Member_Info(position[i]);
+        }
+    }
+    if (sc == FAILURE)
+    {
+        printf("Only these members have completed their goals properly\n");
+    }
+    else
+    {
+        printf("\n\nTotal steps covered by: \n");
+        printf("Rank 1 : %u\n", first);
+        printf("Rank 2 : %u\n", second);
+        printf("Rank 3 : %u\n", third);
+        printf("\n");
+    }
+
+    return sc;
+}
+status_code check_individual_Rewards(unsigned int Member_Id,TreenodeI* rootI)
+{
+    int prize[3] = {100, 75, 50};
+    status_code sc = SUCCESS;
+    NodeI *ptr = Search_for_Pointer_to_Individual(Member_Id,rootI);
+    if (ptr == NULL)
+    {
+        sc = FAILURE;
+    }
+    else
+    {
+        gettop3list(rootI);
+        for (int i = 0; i < 3; i++)
+        {
+            if (position[i] != NULL)
+                position[i]->reward += prize[i];
+        }
+        printf("Reward: %d\n", ptr->reward);
+    }
+    return sc;
+}
+status_code suggest_goalUpdates(unsigned int id,TreenodeI* rootI)
+{
+    status_code sc = SUCCESS;
+    
+    NodeI *ptr = Search_for_Pointer_to_Individual(id,rootI);
+    if (ptr == NULL)
+    {
+        printf("Enter the valid id input.\n");
+    }
+    else
+    {
+        gettop3list(rootI);
+        int flag = 0;
+        for (int i = 0; i < 3; i++)
+        {
+            if (position[i]->Id == id)
+            {
+                printf("The user is already in top 3 he/she is consistent in his goals\n");
+                flag = 1;
+            }
+        }
+        if (flag = 0)
+        {
+            unsigned int steps = 0;
+            Boolean check = target_complete(ptr, &steps);
+            if (check == FALSE)
+            {
+                printf("The user is not consistent he/she should complete daily_step goal daily without any fail\n");
+            }
+            unsigned int avg = (first + second + third) / 21;
+            // Average
+            printf("The user should set an avg of %u daily step goal to be in top 3 and should be consistent in his job\n", avg);
+        }
+    }
+}
+
 void main()
 {
 	TreenodeG *rootG=NULL;
@@ -1520,21 +1761,179 @@ void main()
 
         fclose(ptr);
    
-   	    //printf("\nTree before deletion\n");
-   	    //traversalI(rootI);
-        //printTreeI(rootI,1);
-        //printTreeG(rootG,1);
-        //DeleteNodeI(rootI,120);
-        //printf("\nTree after deletion\n");
-        //printTreeI(rootI,1);
-        //traversalI(rootI);
-        //printf("\n%u",Search_for_Pointer_to_Individual(115,rootI)->Id);
-        Generate_Leader_Board(rootG,rootS);
-        Display_group_range_info(rootG,1,5);
-        rootG=Merge_Groups(1,4,rootG);
-        //rootG=Delete_Group(5,rootG);
-        traversalG(rootG,1,5);
-        Display_group_range_info(rootG,1,5);
+
+        int value = 0;
+        status_code sc;
+
+        while (value != -1)
+        {
+            printf("\nEnter the number of the function: ");
+            scanf("%d", &value);
+            if (value == 1)
+            {
+                nodeI.belong = 0;
+                nodeI.reward = 0;
+                printf("Enter the Id: ");
+                scanf("%u", &nodeI.Id);
+                printf("Enter the Name: ");
+                scanf("%s", nodeI.Name);
+                printf("Enter the Age: ");
+                scanf("%u", &nodeI.Age);
+                printf("Enter daily step goals: ");
+                scanf("%u", &nodeI.Daily_Step_Goal);
+                for (int i = 0; i < 7; i++)
+                {
+                    nodeI.Weekly_Step_Count[i] = 0;
+                }
+                rootI = InsertTreeI(nodeI, rootI);
+                // traversal(rootI);
+            }
+            else if (value == 2)
+            {
+                NodeG nptr;
+
+                printf("Enter the Id: ");
+                unsigned int id;
+                scanf("%u", &id);
+                nptr.Id = id;
+                status_code sc = SUCCESS;
+                rootG = Create_Group(&nptr, rootG, &sc);
+                if (sc == SUCCESS)
+                {
+                    printf("Enter the Name: ");
+                    fflush(stdin);
+                    scanf("%s", nptr.Name);
+                    printf("Enter the weekly group goals :");
+                    scanf("%u", &nptr.Weekly_Group_Goal);
+                    unsigned int memberid;
+                    int i = 0;
+                    int complete = 1;
+
+                    while (i < 5 && complete == 1)
+                    {
+
+                        printf("Enter the id of individual : ");
+                        scanf("%u", &memberid);
+                        NodeI *temp = Search_for_Pointer_to_Individual(memberid, rootI);
+                        if (temp != NULL)
+                        {
+                            if (temp->belong == 1)
+                            {
+                                printf("The Member:  %s id: %u already belongs to some group .\n", temp->Name, temp->Id);
+                            }
+                            else
+                            {
+                                temp->belong = 1;
+                                nptr.Members[i] = temp;
+                                i++;
+                            }
+                        }
+                        printf("Enter 1 to add more member else 0 if completed\n");
+                        scanf("%d", &complete);
+                    }
+                    while (i < 5)
+                    {
+                        nptr.Members[i] = NULL;
+                        i++;
+                    }
+
+                    //Display_group_range_info(rootG,1,5);
+                }
+                else
+                {
+                    printf("Already exist \n");
+                }
+            }
+            else if (value==3)
+            {
+                /* code */
+                status_code sc=get_Top3(rootI);
+            }
+            else if (value == 4)
+            {
+                printf("\nEnter the Details of the Group whose achievement is to be checked\n");
+               
+                // Only group 4 hasn't complete its weekly step goal, rest all have done it
+                printf("Enter the group_id to check its Achievement : ");
+                unsigned id;
+                scanf("%u", &id);
+
+                Boolean check = Check_Group_Achievement(id,rootG);
+                printf("\n");
+            }
+            else if (value == 5)
+            {
+                printf("\nGroups Leaderboard based on Number of Steps completed\n");
+                // Generate Leader board
+                Generate_Leader_Board(rootG,rootS);
+            }
+            else if(value==6){
+                 printf("Enter the id to check its reward: ");
+                unsigned int id;
+                scanf("%u", &id);
+                sc = check_individual_Rewards(id,rootI);
+                if (sc == FAILURE)
+                {
+                    printf("Enter the valid ID input \n");
+                }
+             
+            }
+              else if (value == 7)
+            {
+                printf("Enter the id to be deleted:  ");
+                unsigned int id;
+                scanf("%u", &id);
+                rootI=DeleteNodeI(rootI,id);
+                //traversal(rootI);
+                // if (sc == SUCCESS)
+                display_individualDatacompletely(rootI);
+            }
+            else if (value == 8)
+            {
+                printf("Enter the Group id to be deleted:  ");
+                unsigned int id;
+                scanf("%u", &id);
+                
+                rootG=Delete_Group(id,rootG);
+            }
+            else if (value == 9)
+            {
+                unsigned int id1, id2;
+                printf("Enter the two Group IDs to be merged : ");
+                scanf("%u%u", &id1, &id2);
+
+                rootG=Merge_Groups(id1, id2,rootG);
+                Display_group_range_info(rootG,1,5);
+            }
+
+            else if (value == 10)
+            {
+                unsigned int lower=0,upper=0;
+
+                printf("\nEnter the Group id range whose info is to be dispalyed:  ");
+                printf("\nLower bound = ");
+                scanf("%u",&lower);
+                printf("\nUpper = ");
+                scanf("%u",&upper);
+                if(lower>upper)
+                	printf("\nPlease enter valid range");
+                else
+                {
+                	Display_group_range_info(rootG,lower,upper);
+                }
+            }
+            else if (value == 11)
+            {
+                printf("Enter the id for which suggession is required: ");
+                unsigned int id;
+                scanf("%u", &id);
+                sc = suggest_goalUpdates(id,rootI);
+            }
+            else
+            {
+                printf("Enter the valid input !!\n");
+            }
+        }
     }
 
 }
