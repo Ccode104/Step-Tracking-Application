@@ -243,7 +243,7 @@ Boolean PushdownG(TreeentryG newentry,TreenodeG *current,TreeentryG *medentry,Tr
 		/*Search the current node*/
 		if(SearchNodeG(newentry.Id,current,&pos))
 		{
-			printf("Warning:Gnserting duplicate key into B-tree");
+			printf("Warning:Inserting duplicate key into B-tree");
 		}
 		else if(PushdownG(newentry,current->branch[pos],medentry,medright))
 		{
@@ -933,7 +933,7 @@ Boolean PushdownS(TreeentryS newentry,TreenodeS *current,TreeentryS *medentry,Tr
 		/*Search the current node*/
 		if(SearchNodeS(newentry.steps,current,&pos))
 		{
-			printf("Warning:Snserting duplicate key into B-tree");
+			printf("Warning:Inserting duplicate key into B-tree");
 		}
 		else if(PushdownS(newentry,current->branch[pos],medentry,medright))
 		{
@@ -1419,17 +1419,19 @@ TreenodeG* Merge_Groups(unsigned int Group_Id_1, unsigned int Group_Id_2,Treenod
 }
 
 
+TreenodeS* Delete_Sroup(unsigned int steps,TreenodeS *rootS)
+{
+	return(DeleteNodeS(rootS,steps));
+}
 
 TreenodeG* Delete_Group(unsigned int id,TreenodeG *rootG,TreenodeS **rootS)
 {
-	*rootS=Delete_Sroup(id,*rootS);
+	*rootS=Delete_Sroup(Compute_Number_Of_Steps_by_a_Group(Search_for_Pointer_to_Group(id,rootG)),*rootS);
+	printf("\nDeletion of the Group is Successful!! \n");
 	return(DeleteNodeG(rootG,id));
 }
 
-TreenodeS* Delete_Sroup(unsigned int id,TreenodeS *rootS)
-{
-	return(DeleteNodeS(rootS,id));
-}
+
 
 unsigned int Compute_Number_Of_Steps_In_a_Week(NodeI *nptr)
 {
@@ -1869,7 +1871,7 @@ void main()
                 scanf("%u", &id);
                 nptr.Id = id;
                 status_code sc = SUCCESS;
-                rootG = Create_Group(&nptr, rootG, &sc,&rootS);
+                
                 if (sc == SUCCESS)
                 {
                     printf("Enter the Name: ");
@@ -1908,7 +1910,8 @@ void main()
                         nptr.Members[i] = NULL;
                         i++;
                     }
-
+                    //printf("\n%u %u\n",Compute_Number_Of_Steps_by_a_Group(&nptr),nptr.Weekly_Group_Goal);
+                    rootG = Create_Group(&nptr, rootG, &sc,&rootS);
                     //Display_group_range_info(rootG,1,5);
                 }
                 else
