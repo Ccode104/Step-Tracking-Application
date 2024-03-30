@@ -83,22 +83,29 @@ unsigned int Compute_Number_Of_Steps_In_a_Week(NodeI*);
 /*Compute the Number of Steps Completed by a Group in a week*/
 unsigned int Compute_Number_Of_Steps_by_a_Group(NodeG*);
 
+TreenodeS* DeleteNodeS(TreenodeS*,unsigned int);
+
 /*Create the Nodes*/
 NodeI* CreateNodeI();
 NodeG* CreateNodeG();
+NodeS* CreateNodeS();
 
 //Main Functionalities
 /*Add a Person*/
 status_code Add_Person(NodeI*);
 
 /*Create a Group*/
-TreenodeG* Create_Group(NodeG*,TreenodeG*,status_code*);
+TreenodeG* Create_Group(NodeG*,TreenodeG*,status_code*,TreenodeS**);
+
+TreenodeS* Create_Sroup(NodeS*,TreenodeS*,status_code*);
 
 /*Delete a Group*/
-TreenodeG* Delete_Group(unsigned int,TreenodeG*);
+TreenodeG* Delete_Group(unsigned int,TreenodeG*,TreenodeS**);
+
+TreenodeS* Delete_Sroup(unsigned int,TreenodeS*);
 
 /*Merge Groups*/
-TreenodeG* Merge_Groups(unsigned int,unsigned int,TreenodeG*);
+TreenodeG* Merge_Groups(unsigned int,unsigned int,TreenodeG*,TreenodeS**);
 
 status_code Display_Member_Info(NodeI*);
 
@@ -1087,14 +1094,82 @@ void RestoreS(TreenodeS* current,int pos){
 		combineS(current,pos);
 	}
 }
+void RemoveS(TreenodeS* current,int pos){
+	int i;
+	for(i=pos+1;i<=current->count;i++){
+		current->entry[i-1]=current->entry[i];
+		current->branch[i-1]=current->branch[i];
 
-TreenodeG* Create_Group(NodeG *nptr,TreenodeG *root,status_code* sc)
+	}
+	current->count--;
+}
+void SuccessorS(TreenodeS* currrent,int pos){
+    TreenodeS* leaf;
+    for(leaf=currrent->branch[pos];leaf->branch[0];leaf=leaf->branch[0]);
+    currrent->entry[pos]=leaf->entry[1];
+    
+}
+void RecDeleteNodeS(TreenodeS* current,Key id){
+    int pos;
+    if(current==NULL){
+        printf("Id not found!!\n");
+        return ;
+    }
+    if(SearchNodeS(id,current,&pos)){
+        // Target is founfd in the current nodeS
+        if(current->branch[pos-1]){
+            // When deletion not from leaf node so we take successor node of child to parent 
+            SuccessorS(current,pos);
+            RecDeleteNodeS(current->branch[pos],current->entry[pos].Id);
+        }
+        else{
+            // When the entry is removed from leaf node
+            RemoveS(current,pos);
+
+        }
+    }
+    else{
+        RecDeleteNodeS(current->branch[pos],id);
+        if(current->branch[pos]){
+            if(current->branch[pos]->count<MIN){
+                RestoreS(current,pos);
+
+            }
+        }
+    }
+}
+TreenodeS* DeleteNodeS(TreenodeS* root,Key id){
+    TreenodeS* oldroot;
+    RecDeleteNodeS(root,id);
+    if(root->count==0){
+        oldroot=root;
+        root=root->branch[0];
+        free(oldroot);
+    }
+    return root;
+
+}
+TreenodeS* Create_Sroup(NodeS *nptr,TreenodeS *root,status_code* sc)
+{
+	root=InsertTreeS(*nptr,root);
+	return root;
+}
+
+TreenodeG* Create_Group(NodeG *nptr,TreenodeG *root,status_code* sc,TreenodeS**rootS)
 {
 	*sc=SUCCESS;
 	if(nptr==NULL)
 		*sc=FAILURE;
 	else
+	{
 		root=InsertTreeG(*nptr,root);
+		NodeS *nptrS=CreateNodeS();
+		nptrS->Id=nptr->Id;
+		strcpy(nptrS->Name,nptr->Name);
+		nptrS->steps=Compute_Number_Of_Steps_by_a_Group(nptr);
+		*rootS=Create_Sroup(nptrS,*rootS,sc);
+	}
+
 	return root;
 }
 NodeI* Search_for_Pointer_to_Individual(unsigned int Individual_Id,TreenodeI *rootI)
@@ -1165,42 +1240,6 @@ status_code Store_Member_Pointers(NodeG *nptr, unsigned int Member_Id[],Treenode
     return sc;
 }
 
-void printTreeI(TreenodeI *rootI,int i)
-{
-	if(rootI==NULL)
-	{
-		
-	}
-	else
-	{
-		//printf("\ncount=%d",rootI->count);
-		for(int j=i;j<=rootI->count;j++)
-		{
-			//printf("\nlevel");
-			printTreeI(rootI->branch[j-1],1);
-			printf(" %u ",rootI->entry[j].Id);
-			printTreeI(rootI->branch[j],1);
-		}
-	}
-}
-
-void printTreeG(TreenodeG *rootG,int i)
-{
-	if(rootG==NULL)
-	{
-		//printf(" %u ",rootG->entry[i].Id);
-	}
-	else
-	{
-		for(int j=i;j<=rootG->count;j++)
-		{
-			//printf("\n");
-			printTreeG(rootG->branch[j-1],1);
-			printf(" %u ",rootG->entry[j].Id);
-			printTreeG(rootG->branch[j],1);
-		}
-	}
-}
 
 void traversalI(TreenodeI *myNode) {
   int i;
@@ -1295,7 +1334,19 @@ NodeG* CreateNodeG()
 
 	return nptr;
 }
-TreenodeG* Merge_Groups(unsigned int Group_Id_1, unsigned int Group_Id_2,TreenodeG *rootG)
+
+NodeS* CreateNodeS()
+{
+	NodeS *nptr;
+	nptr=(NodeS*)malloc(sizeof(NodeS));
+	nptr->Id=0;
+	strcpy(nptr->Name,"unnamed");
+	nptr->steps=0;
+
+	return nptr;
+}
+
+TreenodeG* Merge_Groups(unsigned int Group_Id_1, unsigned int Group_Id_2,TreenodeG *rootG,TreenodeS **rootS)
 {
 
 	int pos;
@@ -1306,7 +1357,7 @@ TreenodeG* Merge_Groups(unsigned int Group_Id_1, unsigned int Group_Id_2,Treenod
     //Search the Groups
 
     group1=Search_for_Pointer_to_Group(Group_Id_1,rootG);
-    group2=Search_for_Pointer_to_Group(Group_Id_2,rootG);;
+    group2=Search_for_Pointer_to_Group(Group_Id_2,rootG);
 
     if (group1 == NULL || group2 == NULL)
     {
@@ -1359,17 +1410,25 @@ TreenodeG* Merge_Groups(unsigned int Group_Id_1, unsigned int Group_Id_2,Treenod
             newgroup->Weekly_Group_Goal = newgoals;
             // Now the group has been sucessfully formed now delete the old groups and place the new group further
             status_code sc;
-            rootG=Delete_Group(Group_Id_1,rootG);
-            rootG=Delete_Group(Group_Id_2,rootG);
-            Create_Group(newgroup,rootG,&sc);
+            rootG=Delete_Group(Group_Id_1,rootG,rootS);
+            rootG=Delete_Group(Group_Id_2,rootG,rootS);
+            rootG=Create_Group(newgroup,rootG,&sc,rootS);
         }
     }
     return rootG;
 }
 
-TreenodeG* Delete_Group(unsigned int id,TreenodeG *rootG)
+
+
+TreenodeG* Delete_Group(unsigned int id,TreenodeG *rootG,TreenodeS **rootS)
 {
+	*rootS=Delete_Sroup(id,*rootS);
 	return(DeleteNodeG(rootG,id));
+}
+
+TreenodeS* Delete_Sroup(unsigned int id,TreenodeS *rootS)
+{
+	return(DeleteNodeS(rootS,id));
 }
 
 unsigned int Compute_Number_Of_Steps_In_a_Week(NodeI *nptr)
@@ -1409,11 +1468,11 @@ unsigned int Compute_Number_Of_Steps_by_a_Group(NodeG *nptr)
 void Generate_Leader_Board(TreenodeG *rootG,TreenodeS *rootS)
 {
 	int count=0;
-	TreenodeS *root=Get_Leader_Board_tree(rootG,rootS);
+	//TreenodeS *root=Get_Leader_Board_tree(rootG,rootS);
 	
 	printf("\nDisplaying the leader board for Groups\n");
 	printf("\n----------------------------------------------------\n");
-	count=traversalS(root,1);
+	count=traversalS(rootS,1);
 
 	printf("\nTotal number of Groups is %d",count-1);
 	printf("\n----------------------------------------------------\n");
@@ -1681,7 +1740,7 @@ status_code suggest_goalUpdates(unsigned int id,TreenodeI* rootI)
                 flag = 1;
             }
         }
-        if (flag = 0)
+        if (flag == 0)
         {
             unsigned int steps = 0;
             Boolean check = target_complete(ptr, &steps);
@@ -1756,11 +1815,11 @@ void main()
 
             fscanf(ptr, "%u", &nodeG.Weekly_Group_Goal);
             //printf("\n%u",nodeG.Weekly_Group_Goal);
-            rootG=InsertTreeG(nodeG,rootG);
+            status_code sc;
+            rootG=Create_Group(&nodeG,rootG,&sc,&rootS);
         }
 
         fclose(ptr);
-   
 
         int value = 0;
         status_code sc;
@@ -1782,8 +1841,6 @@ void main()
             printf("\nEnter the number of the function: ");
             scanf("%d", &value);
             
-            printf("\nEnter the number of the function: ");
-            scanf("%d", &value);
             if (value == 1)
             {
                 nodeI.belong = 0;
@@ -1812,7 +1869,7 @@ void main()
                 scanf("%u", &id);
                 nptr.Id = id;
                 status_code sc = SUCCESS;
-                rootG = Create_Group(&nptr, rootG, &sc);
+                rootG = Create_Group(&nptr, rootG, &sc,&rootS);
                 if (sc == SUCCESS)
                 {
                     printf("Enter the Name: ");
@@ -1909,7 +1966,7 @@ void main()
                 unsigned int id;
                 scanf("%u", &id);
                 
-                rootG=Delete_Group(id,rootG);
+                rootG=Delete_Group(id,rootG,&rootS);
             }
             else if (value == 9)
             {
@@ -1917,7 +1974,7 @@ void main()
                 printf("Enter the two Group IDs to be merged : ");
                 scanf("%u%u", &id1, &id2);
 
-                rootG=Merge_Groups(id1, id2,rootG);
+                rootG=Merge_Groups(id1, id2,rootG,&rootS);
                 Display_group_range_info(rootG,1,5);
             }
 
