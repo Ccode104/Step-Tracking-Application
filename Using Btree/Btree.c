@@ -1,3 +1,12 @@
+/***
+ Name: Abhishek Chandurkar
+ Enroll.No. :BT22CSE104
+
+ Name : Manas Jungade
+ Enroll.No. :BT22CSE127 
+
+ ***/
+
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
@@ -30,6 +39,7 @@ typedef struct NodeG_tag
     unsigned int Weekly_Group_Goal;
 } NodeG;
 
+/*Node type for Groups in LeaderBoard*/
 typedef struct NodeS_tag
 {
     unsigned int Id;
@@ -37,32 +47,39 @@ typedef struct NodeS_tag
     unsigned int steps;
 } NodeS;
 
-
-
+//The Id is the key 
 typedef unsigned int Key;
+
+//Type of entries irrespective Trees
 typedef NodeG TreeentryG;
 typedef NodeI TreeentryI;
 typedef NodeS TreeentryS;
 
+//TreeNode in Individuals B-Tree
 typedef struct treenodeI {
 	int count;/*Except for the root the lower limit is MIN*/
 	TreeentryI entry[MAX + 1];
 	struct treenodeI *branch[MAX +1];
 } TreenodeI;
 
+//TreeNode in Groups B-Tree
 typedef struct treenodeG {
 	int count;/*Except for the root the lower limit is MIN*/
 	TreeentryG entry[MAX + 1];
 	struct treenodeG *branch[MAX +1];
 } TreenodeG;
 
+//TreeNode in LeaderBoard B-Tree
 typedef struct treenodeS {
 	int count;/*Except for the root the lower limit is MIN*/
 	TreeentryS entry[MAX + 1];
 	struct treenodeS *branch[MAX +1];
 } TreenodeS;
 
+//Used to store top 3 individuals pointers
 NodeI *position[3];
+
+//Used to store top 3 individuals step count
 unsigned int first,second,third;
 
 /*Store the Member pointer in the Group*/
@@ -83,7 +100,7 @@ unsigned int Compute_Number_Of_Steps_In_a_Week(NodeI*);
 /*Compute the Number of Steps Completed by a Group in a week*/
 unsigned int Compute_Number_Of_Steps_by_a_Group(NodeG*);
 
-TreenodeS* DeleteNodeS(TreenodeS*,unsigned int);
+//TreenodeS* DeleteNodeS(TreenodeS*,unsigned int);
 
 /*Create the Nodes*/
 NodeI* CreateNodeI();
@@ -102,15 +119,17 @@ TreenodeS* Create_Sroup(NodeS*,TreenodeS*,status_code*);
 /*Delete a Group*/
 TreenodeG* Delete_Group(unsigned int,TreenodeG*,TreenodeS**);
 
+/*Delete a Group from leaderboard*/
 TreenodeS* Delete_Sroup(unsigned int,TreenodeS*);
 
 /*Merge Groups*/
 TreenodeG* Merge_Groups(unsigned int,unsigned int,TreenodeG*,TreenodeS**);
 
+/*Display Memeber Info*/
 status_code Display_Member_Info(NodeI*);
 
 /*Display Group Info*/
-status_code Display_Group_Info();
+//status_code Display_Group_Info();
 
 /*Check Group Achievement*/
 Boolean Check_Group_Achievement(unsigned int,TreenodeG*);
@@ -125,28 +144,11 @@ void PushInG(TreeentryG medentry,TreenodeG *medright,TreenodeG *current,int pos)
 void SplitG(TreeentryG,TreenodeG *,TreenodeG *,int,TreeentryG *,TreenodeG **);
 void traversalG(TreenodeG*,int,int);
 
-
-
-
 /*
-SearchTreeG: traverse B-Tree looking for a target (group).
-Assumption
-->The Btree pointed to by root has been created.
-
-What will it do?
-->Gf the key target is present in the B-tree,
-then return value points to the node containing target in position targetpos.
-Otherwise, the return value is NULL, and targetpos is undefined.
-
-Components:
-->SearchTreeG recursively
-->SearchNodeG
-
+SearchTreeG: traverse B-Tree looking for a target (group-Id).
 */
-
 TreenodeG *SearchTreeG(Key target,TreenodeG *rootG,int *targetpos)
 {
-	TreenodeG *ret_ptr;
 	if(rootG==NULL)
 	{
 		//Empty tree
@@ -165,21 +167,9 @@ TreenodeG *SearchTreeG(Key target,TreenodeG *rootG,int *targetpos)
 	}
 }
 
-/*The above function is tail recursion*/
-
-/***************************************************************************************/
-
 /*
-SearchNode:seraches keys in node for target
-
-Assumptions
-->target is a key and current points to a node of a B-Tree
-
-What will it do?
-->Searches keys in node for target.Returns location pos of targetor
-branch on which to continue search
+SearchNode:searches keys in node for target(Group-Id)
 */
-
 Boolean SearchNodeG(Key target,TreenodeG *current,int *pos)
 {
 	Boolean bool;
@@ -187,6 +177,8 @@ Boolean SearchNodeG(Key target,TreenodeG *current,int *pos)
 	{
 		/*Take the leftmost branch*/
 		*pos=0;
+
+		//The Search has not ended yet
 		bool=FALSE;
 	}
 	else
@@ -197,10 +189,13 @@ Boolean SearchNodeG(Key target,TreenodeG *current,int *pos)
 
 		if(target==current->entry[*pos].Id)
 		{
+			//The Search was Successful
 			bool=TRUE;
 		}
 		else
 		{
+			//The Search has not ended yet
+			//Search in the branch *pos
 			bool=FALSE;
 		}
 	}
@@ -215,31 +210,33 @@ TreenodeG* InsertTreeG(TreeentryG newentry,TreenodeG *rootG)
 	if(PushdownG(newentry,rootG,&medentry,&medright))
 	{
 		/*Tree grows in height */
+		//Median entry goes up
 
 		newroot=(TreenodeG*)malloc(sizeof(TreenodeG)); /*Make a new root */
-		newroot->count=1;
-		newroot->entry[1]=medentry;
-		newroot->branch[0]=rootG;
-		newroot->branch[1]=medright;
+		newroot->count=1;           //Set the count to 1(only 1 key now)
+		newroot->entry[1]=medentry; //Insert the median entry in new-root
+		newroot->branch[0]=rootG;	//The left subtree on left
+		newroot->branch[1]=medright;//The medright subtree on its right	
 		return newroot;
 	}
 	return rootG;
 }
 
-/* PushDownG:recursively belongs in the subtree to which current points*/
+/* PushDownG:searches down the tree recursivels to insert the entry*/
 Boolean PushdownG(TreeentryG newentry,TreenodeG *current,TreeentryG *medentry,TreenodeG **medright)
 {
-	Boolean bool;
 	int pos; /*branch on which to continue the search*/
 	if(current==NULL)
-	{
-		/*cannot insert into empty tree;terminates*/
-		*medentry = newentry;
+	{	
+		//Reached the leaf node branch(NULL) or the tree is itself empty
+		//the entry needs to be inserted in leaf or newroot needs to be created
+		*medentry = newentry;	
 		*medright=NULL;
 		return TRUE;
 	}
 	else
 	{
+		//Will reach here if the tree is not empty
 		/*Search the current node*/
 		if(SearchNodeG(newentry.Id,current,&pos))
 		{
@@ -247,16 +244,22 @@ Boolean PushdownG(TreeentryG newentry,TreenodeG *current,TreeentryG *medentry,Tr
 		}
 		else if(PushdownG(newentry,current->branch[pos],medentry,medright))
 		{
-
+			//If the branch on which PushDown is called is empty we reach here
 			if(current->count<MAX)
 			{
 				/*Reinsert median key*/
 				PushInG(*medentry,*medright,current,pos);
+
+				//The key has been Successsfully inserted so stop 
 				return FALSE;
 			}
 			else
 			{
+				//The leaf node is full so split it and then push median up
+				//If the parent of leaf node too is full,split again
 				SplitG(*medentry,*medright,current,pos,medentry,medright);
+
+				//The entry has still not been made
 				return TRUE;
 			}
 		}
@@ -264,10 +267,13 @@ Boolean PushdownG(TreeentryG newentry,TreenodeG *current,TreeentryG *medentry,Tr
 	}
 }
 
+/*Insert a key in a node*/
 void PushInG(TreeentryG medentry,TreenodeG *medright,TreenodeG *current,int pos)
 {
 	/*index to move keys to make room for medentry */
 	int i;
+	//count refers to the no.of.keys
+	//Insertion at pos+1 
 	for(i=current->count;i>pos;i--)
 	{
 		/*Shift all keys and branches to the right*/
@@ -279,23 +285,29 @@ void PushInG(TreeentryG medentry,TreenodeG *medright,TreenodeG *current,int pos)
 	current->count++;
 }
 
-
+/*Splitting of a Node*/
 void SplitG(TreeentryG medentry,TreenodeG *medright,TreenodeG *current,int pos,TreeentryG *newmedian,TreenodeG **newright)
 {
-
 	int i;
-	int median;
+	int median; //Position of median choosen 
+				//depending upon pos of insertion of newentry
 	if(pos<=MIN)
 	{
+		//If pos is behind or at middle
 		median=MIN;
 	}
 	else
 	{
+		//If pos is ahead of middle
 		median=MIN+1;
 	}
+	//The above cases arise so as to balnce the number of nodes in the splitting
 
+	//Create the right subtree for median entry to be inserted
 	*newright=(TreenodeG*)malloc(sizeof(TreenodeG));
 
+	//Fill the right subtree of median
+	//Last key at index MAX 
 	for(i=median+1;i<=MAX;i++)
 	{
 		(*newright)->entry[i-median]=current->entry[i];
@@ -317,7 +329,149 @@ void SplitG(TreeentryG medentry,TreenodeG *medright,TreenodeG *current,int pos,T
 	current->count--;
 }
 
+/*Deletion from a B-tree*/
+void MoveRightG(TreenodeG* current,int pos){
+	int c;
+	TreenodeG* t;
+	t=current->branch[pos];
+	for(c=t->count;c>0;c--){
+		t->entry[c+1]=t->entry[c];
+		t->branch[c+1]=t->branch[c];
+	}
+	t->branch[1]=t->branch[0] ; // Move key from parent to rightnode;
+	t->count++;
+	t->entry[1]=current->entry[pos];
+	t=current->branch[pos-1]; // MOve last key of left node int parent;
+	current->entry[pos]=t->entry[t->count];
+	current->branch[pos]=t->branch[t->count];
+	t->count--;
+}
+void MoveLeftG(TreenodeG* current,int pos){
+	int c;
+	TreenodeG* t;
+	t=current->branch[pos-1];  // Move key from parent to left node
+	t->count++;
+	t->entry[t->count]=current->entry[pos];
+	t->branch[t->count]=current->branch[pos]->branch[0];
+	t=current->branch[pos];
+	current->entry[pos]=t->entry[1];
+	t->branch[0]=t->branch[1];
+	t->count--;
+	for(c=1;c<=t->count;c++){
+		// Shift all keys in right node one position leftward
+		t->entry[c]=t->entry[c+1];
+		t->branch[c]=t->branch[c+1];
+	}
 
+}
+void combineG(TreenodeG* current,int pos){
+	int c;
+	TreenodeG* right,*left;
+	right=current->branch[pos];
+	left=current->branch[pos-1]; // Work with left node
+	left->count++; // GNsert the key from the parent;
+	left->entry[left->count]=current->entry[pos];
+	left->branch[left->count]=right->branch[0];
+	for(c=1;c<=right->count;c++){
+		left->count++;
+		left->entry[left->count]=right->entry[c];
+		left->branch[left->count]=right->branch[c];
+	}
+	for(c=pos;c<current->count;c++){
+		// Deleting key from parent node and shifting others 
+		current->entry[c]=current->entry[c+1];
+		current->branch[c]=current->branch[c+1];
+	}
+	current->count--;
+	free(right);
+
+}
+void RestoreG(TreenodeG* current,int pos){
+	if(pos==0){
+		// Leftmost key
+		if(current->branch[1]->count>MIN){
+			MoveLeftG(current,1);
+		}
+		else{
+			combineG(current,1);
+		}
+	}
+	else if(pos==current->count){
+		// rightmost key;
+	    if(current->branch[pos-1]->count>MIN){
+			MoveRightG(current,pos);
+
+		}
+		else{
+			combineG(current,pos);
+		}
+	}
+	else if(current->branch[pos-1]->count>MIN){
+		MoveRightG(current,pos);
+	}
+	else if(current->branch[pos+1]->count>MIN)
+	{
+		MoveLeftG(current,pos+1);
+	}
+	else{
+		combineG(current,pos);
+	}
+}
+void RemoveG(TreenodeG* current,int pos){
+	int i;
+	for(i=pos+1;i<=current->count;i++){
+		current->entry[i-1]=current->entry[i];
+		current->branch[i-1]=current->branch[i];
+
+	}
+	current->count--;
+}
+void SuccessorG(TreenodeG* currrent,int pos){
+	TreenodeG* leaf;
+	for(leaf=currrent->branch[pos];leaf->branch[0];leaf=leaf->branch[0]);
+	currrent->entry[pos]=leaf->entry[1];
+	
+}
+void RecDeleteNodeG(TreenodeG* current,Key id){
+	int pos;
+	if(current==NULL){
+		printf("Id not found!!\n");
+		return ;
+	}
+	if(SearchNodeG(id,current,&pos)){
+		// Target is founfd in the current nodeG
+		if(current->branch[pos-1]){
+			// When deletion not from leaf node so we take successor node of child to parent 
+			SuccessorG(current,pos);
+			RecDeleteNodeG(current->branch[pos],current->entry[pos].Id);
+		}
+		else{
+			// When the entry is removed from leaf node
+			RemoveG(current,pos);
+
+		}
+	}
+	else{
+		RecDeleteNodeG(current->branch[pos],id);
+		if(current->branch[pos]){
+			if(current->branch[pos]->count<MIN){
+				RestoreG(current,pos);
+
+			}
+		}
+	}
+}
+TreenodeG* DeleteNodeG(TreenodeG* root,Key id){
+	TreenodeG* oldroot;
+	RecDeleteNodeG(root,id);
+	if(root->count==0){
+		oldroot=root;
+		root=root->branch[0];
+		free(oldroot);
+	}
+	return root;
+
+}
 
 
 /*Individual Functions Prototypes*/
@@ -326,24 +480,7 @@ Boolean PushdownI(TreeentryI newentry,TreenodeI *current,TreeentryI *medentry,Tr
 void PushInI(TreeentryI medentry,TreenodeI *medright,TreenodeI *current,int pos);
 void SplitI(TreeentryI,TreenodeI *,TreenodeI *,int,TreeentryI *,TreenodeI **);
 
-
-
-
-/*
-SearchTreeI: traverse B-Tree looking for a target (group).
-Assumption
-->The Btree pointed to by root has been created.
-
-What will it do?
-->If the key target is present in the B-tree,
-then return value points to the node containing target in position targetpos.
-Otherwise, the return value is NULL, and targetpos is undefined.
-
-Components:
-->SearchTreeI recursively
-->SearchNodeI
-
-*/
+/*Similar functions for Individual Tree*/
 
 TreenodeI *SearchTreeI(Key target,TreenodeI *rootI,int *targetpos)
 {
@@ -366,20 +503,6 @@ TreenodeI *SearchTreeI(Key target,TreenodeI *rootI,int *targetpos)
 	}
 }
 
-/*The above function is tail recursion*/
-
-/***************************************************************************************/
-
-/*
-SearchNode:seraches keys in node for target
-
-Assumptions
-->target is a key and current points to a node of a B-Tree
-
-What will it do?
-->Searches keys in node for target.Returns location pos of targetor
-branch on which to continue search
-*/
 
 Boolean SearchNodeI(Key target,TreenodeI *current,int *pos)
 {
@@ -661,148 +784,7 @@ TreenodeI* DeleteNodeI(TreenodeI* root,Key id){
 
 }
 
-void MoveRightG(TreenodeG* current,int pos){
-	int c;
-	TreenodeG* t;
-	t=current->branch[pos];
-	for(c=t->count;c>0;c--){
-		t->entry[c+1]=t->entry[c];
-		t->branch[c+1]=t->branch[c];
-	}
-	t->branch[1]=t->branch[0] ; // Move key from parent to rightnode;
-	t->count++;
-	t->entry[1]=current->entry[pos];
-	t=current->branch[pos-1]; // MOve last key of left node int parent;
-	current->entry[pos]=t->entry[t->count];
-	current->branch[pos]=t->branch[t->count];
-	t->count--;
-}
-void MoveLeftG(TreenodeG* current,int pos){
-	int c;
-	TreenodeG* t;
-	t=current->branch[pos-1];  // Move key from parent to left node
-	t->count++;
-	t->entry[t->count]=current->entry[pos];
-	t->branch[t->count]=current->branch[pos]->branch[0];
-	t=current->branch[pos];
-	current->entry[pos]=t->entry[1];
-	t->branch[0]=t->branch[1];
-	t->count--;
-	for(c=1;c<=t->count;c++){
-		// Shift all keys in right node one position leftward
-		t->entry[c]=t->entry[c+1];
-		t->branch[c]=t->branch[c+1];
-	}
 
-}
-void combineG(TreenodeG* current,int pos){
-	int c;
-	TreenodeG* right,*left;
-	right=current->branch[pos];
-	left=current->branch[pos-1]; // Work with left node
-	left->count++; // GNsert the key from the parent;
-	left->entry[left->count]=current->entry[pos];
-	left->branch[left->count]=right->branch[0];
-	for(c=1;c<=right->count;c++){
-		left->count++;
-		left->entry[left->count]=right->entry[c];
-		left->branch[left->count]=right->branch[c];
-	}
-	for(c=pos;c<current->count;c++){
-		// Deleting key from parent node and shifting others 
-		current->entry[c]=current->entry[c+1];
-		current->branch[c]=current->branch[c+1];
-	}
-	current->count--;
-	free(right);
-
-}
-void RestoreG(TreenodeG* current,int pos){
-	if(pos==0){
-		// Leftmost key
-		if(current->branch[1]->count>MIN){
-			MoveLeftG(current,1);
-		}
-		else{
-			combineG(current,1);
-		}
-	}
-	else if(pos==current->count){
-		// rightmost key;
-	    if(current->branch[pos-1]->count>MIN){
-			MoveRightG(current,pos);
-
-		}
-		else{
-			combineG(current,pos);
-		}
-	}
-	else if(current->branch[pos-1]->count>MIN){
-		MoveRightG(current,pos);
-	}
-	else if(current->branch[pos+1]->count>MIN)
-	{
-		MoveLeftG(current,pos+1);
-	}
-	else{
-		combineG(current,pos);
-	}
-}
-void RemoveG(TreenodeG* current,int pos){
-	int i;
-	for(i=pos+1;i<=current->count;i++){
-		current->entry[i-1]=current->entry[i];
-		current->branch[i-1]=current->branch[i];
-
-	}
-	current->count--;
-}
-void SuccessorG(TreenodeG* currrent,int pos){
-	TreenodeG* leaf;
-	for(leaf=currrent->branch[pos];leaf->branch[0];leaf=leaf->branch[0]);
-	currrent->entry[pos]=leaf->entry[1];
-	
-}
-void RecDeleteNodeG(TreenodeG* current,Key id){
-	int pos;
-	if(current==NULL){
-		printf("Id not found!!\n");
-		return ;
-	}
-	if(SearchNodeG(id,current,&pos)){
-		// Target is founfd in the current nodeG
-		if(current->branch[pos-1]){
-			// When deletion not from leaf node so we take successor node of child to parent 
-			SuccessorG(current,pos);
-			RecDeleteNodeG(current->branch[pos],current->entry[pos].Id);
-		}
-		else{
-			// When the entry is removed from leaf node
-			RemoveG(current,pos);
-
-		}
-	}
-	else{
-		RecDeleteNodeG(current->branch[pos],id);
-		if(current->branch[pos]){
-			if(current->branch[pos]->count<MIN){
-				RestoreG(current,pos);
-
-			}
-		}
-	}
-}
-TreenodeG* DeleteNodeG(TreenodeG* root,Key id){
-	TreenodeG* oldroot;
-	RecDeleteNodeG(root,id);
-	if(root->count==0){
-		oldroot=root;
-		root=root->branch[0];
-		free(oldroot);
-	}
-	return root;
-
-}
 /*Group leaderboard tree Functions*/
 typedef NodeS TreeentryS;
 
@@ -1588,7 +1570,7 @@ void gettop3list(TreenodeI *rootI)
             {
                 // Target is completed;
 
-                // The member has completed therir daily step goals
+                // The member has completed their daily step goals
 
                 if (position[0] == NULL)
                 {
@@ -1921,6 +1903,7 @@ void main()
             }
             else if (value==3)
             {
+            	position[0]=position[1]=position[2]=NULL;
                 /* code */
                 status_code sc=get_Top3(rootI);
             }
@@ -2004,7 +1987,7 @@ void main()
                 scanf("%u", &id);
                 sc = suggest_goalUpdates(id,rootI);
             }
-            else
+            else if(value!=-1)
             {
                 printf("Enter the valid input !!\n");
             }
