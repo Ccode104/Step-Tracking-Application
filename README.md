@@ -6,6 +6,8 @@ leader boards to encourage people to complete steps with great rewards for top 3
 has a group leader board where groups are ranked according to steps completed by each group as a
 whole. We have to design this step tracking application using trees. 
 
+The project was done in a group of 2 members.
+
 ## Representation of Data
 
 ### Generates a tree of individuals with following fields
@@ -25,6 +27,12 @@ This tree is be sorted on the basis of Group-ID. A group can contain maximum 5
 individuals.
 
 Here the tree is a B-Tree.
+
+#### Linked List Implementation:
+• This was also done using Linked Lists.(Alternative to B-Tree) 
+•	Algorithm for sorting used is Radix Sort and the data is stored in the form of linked lists. 
+•	Traversal ,Search ,Sort, Insert and Delete operations on the Singly Linked Lists were performed and practiced.
+•	Implementation of a Hash Table for performing Radix Sort was done.
 
 ## Functions
 
