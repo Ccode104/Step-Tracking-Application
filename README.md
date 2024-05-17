@@ -11,22 +11,22 @@ The project was done in a group of 2 members.
 ## Representation of Data
 
 ### Generates a tree of individuals with following fields
-a. ID (unique ID) 
-b. Name
-c. Age
-d. Daily Step goal
-e. Array of weekly step count (7 days step count recorded)
-This tree is sorted on the basis of ID
+a. ID (unique ID) \
+b. Name \
+c. Age \ 
+d. Daily Step goal \
+e. Array of weekly step count (7 days step count recorded) \
+This tree is sorted on the basis of ID \
 
 ### Generates a tree of groups with following fields
-a. Group-ID
-b. Group name
-c. Member IDs with pointers to individuals in individuals tree
-d. Weekly group goal
-This tree is be sorted on the basis of Group-ID. A group can contain maximum 5
-individuals.
+a. Group-ID \
+b. Group name \
+c. Member IDs with pointers to individuals in individuals tree \
+d. Weekly group goal \
+This tree is be sorted on the basis of Group-ID. \ 
+A group can contain maximum 5 individuals. \
 
-Here the tree is a B-Tree.
+Here the tree is a B-Tree. \
 
 #### Linked List Implementation:
 • This was also done using Linked Lists.(Alternative to B-Tree) 
