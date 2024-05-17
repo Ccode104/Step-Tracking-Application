@@ -11,7 +11,7 @@ The project was done in a group of 2 members.
 ## Representation of Data
 
 ### Generates a tree of individuals with following fields
-a. ID (unique ID)
+a. ID (unique ID) 
 b. Name
 c. Age
 d. Daily Step goal
