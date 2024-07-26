@@ -215,7 +215,7 @@ TreenodeG* InsertTreeG(TreeentryG newentry,TreenodeG *rootG)
 		newroot=(TreenodeG*)malloc(sizeof(TreenodeG)); /*Make a new root */
 		newroot->count=1;           //Set the count to 1(only 1 key now)
 		newroot->entry[1]=medentry; //Insert the median entry in new-root
-		newroot->branch[0]=rootG;	//The left subtree on left
+		newroot->branch[0]=rootG;	//The left subtree(prev rootG) on left
 		newroot->branch[1]=medright;//The medright subtree on its right	
 		return newroot;
 	}
@@ -301,7 +301,7 @@ void SplitG(TreeentryG medentry,TreenodeG *medright,TreenodeG *current,int pos,T
 		//If pos is ahead of middle
 		median=MIN+1;
 	}
-	//The above cases arise so as to balnce the number of nodes in the splitting
+	//The above cases arise so as to balance the number of nodes in the splitting
 
 	//Create the right subtree for median entry to be inserted
 	*newright=(TreenodeG*)malloc(sizeof(TreenodeG));
@@ -1356,14 +1356,14 @@ TreenodeG* Merge_Groups(unsigned int Group_Id_1, unsigned int Group_Id_2,Treenod
         while (i < 5 && group1->Members[i] != NULL)
         {
             newgroup->Members[i] = group1->Members[i];
-            printf("\nName %s",newgroup->Members[i]->Name);
+            //printf("\nName %s",newgroup->Members[i]->Name);
             i++;
         }
         int p = 0;
         while (i < 5 && group2->Members[p] != NULL)
         {
             newgroup->Members[i] = group2->Members[p];
-            printf("\nName %s",newgroup->Members[i]->Name);
+            //printf("\nName %s",newgroup->Members[i]->Name);
             i++;
             p++;
         }
@@ -1904,6 +1904,7 @@ void main()
             else if (value==3)
             {
             	position[0]=position[1]=position[2]=NULL;
+            	first=second=third=0;
                 /* code */
                 status_code sc=get_Top3(rootI);
             }
